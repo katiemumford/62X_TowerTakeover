@@ -19,9 +19,8 @@ int minPct = 5; //minimum controller value (%) for drive, accounts for stick dri
 bool armMoving = false;  //whether the arm has been toggled
 int armWait = 0; //time since last arm toggle
 
-bool pressingButtonL2 = false; //for L2 to be the shift key for L1 and L2 to spin at half speed
 
-bool buttonL1Pressed = false;
+
 
 bool tiltingForward = false; //whether the tilt has been toggled to go forward
 int tiltWait = 0; // time since last titl forward toggle
@@ -115,7 +114,7 @@ void intakeControl() {
 //if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
 
 if (Controller.ButtonL2.pressing() && Controller.ButtonL1.pressing()){
-  spinIntake(40); Controller.Screen.print("i should be spinning half speed");
+  spinIntake(40);
 } else if (Controller.ButtonL2.pressing()&& Controller.ButtonL2.pressing()){
   spinIntake(-40);
 }
@@ -156,6 +155,7 @@ hold shift key and press R1 again to get intake back down
 **/
 
 void armControl() {
+
 
 
   /**
@@ -199,7 +199,6 @@ if (Controller.ButtonL1.pressing()){
 bool trayMovingBackAutomat = false;
 
 void moveBackAutomatically(){
-  pressingButtonL2 = true;
   trayMovingBackAutomat = true;
   if (trayLimit.value() == 0){    //if limit switch is not being hit, tray is up in air
     while(trayLimit.value() != 1){  //so...until limit switch is hit, move tray
@@ -207,7 +206,6 @@ void moveBackAutomatically(){
     }
   }
   trayMovingBackAutomat = false;
-  pressingButtonL2 = false;
 }
 
 void trayControl() {
@@ -218,8 +216,7 @@ void trayControl() {
   Controller.ButtonL2.pressed(moveBackAutomatically);
 
   if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
-    moveTray(90);  
-    pressingButtonL2 = true;                           
+    moveTray(90);                           
   } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
     if (tray.rotation(rev) > -5){
       moveTray(-80);
@@ -229,7 +226,6 @@ void trayControl() {
   } else if (trayMovingBackAutomat == false){
     moveTray(0);
   }
-  pressingButtonL2 = false;
 }
   /**
 
