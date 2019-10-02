@@ -113,17 +113,17 @@ void intakeControl() {
 //if R2 pressed, intake outakes at -100 until unpressed
 //if R1 and (shiftKey) L2 pressed, intake intakes at 50 until unpressed
 //if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
-if (Controller.ButtonR1.pressing()){
+
+if (Controller.ButtonL2.pressing() && Controller.ButtonL1.pressing()){
+  spinIntake(40); Controller.Screen.print("i should be spinning half speed");
+} else if (Controller.ButtonL2.pressing()&& Controller.ButtonL2.pressing()){
+  spinIntake(-40);
+}
+else if (Controller.ButtonR1.pressing()){
   spinIntake(100);
 }
 else if(Controller.ButtonR2.pressing()){
   spinIntake(-100);
-}
-else if (Controller.ButtonR1.pressing() && Controller.ButtonL2.pressing() && pressingButtonL2==false){
-  spinIntake(50); Controller.Screen.print("i should be spinning half speed");
-}
-else if (Controller.ButtonR2.pressing() && Controller.ButtonL2.pressing()){
-  spinIntake(-50);
 }
 else{
   spinIntake(0);
