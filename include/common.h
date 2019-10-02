@@ -19,6 +19,8 @@ int minPct = 5; //minimum controller value (%) for drive, accounts for stick dri
 bool armMoving = false;  //whether the arm has been toggled
 int armWait = 0; //time since last arm toggle
 
+bool pressingButtonL2 = false; //for L2 to be the shift key for L1 and L2 to spin at half speed
+
 bool buttonL1Pressed = false;
 
 bool tiltingForward = false; //whether the tilt has been toggled to go forward
@@ -117,8 +119,8 @@ if (Controller.ButtonR1.pressing()){
 else if(Controller.ButtonR2.pressing()){
   spinIntake(-100);
 }
-else if (Controller.ButtonR1.pressing() && Controller.ButtonL2.pressing()){
-  spinIntake(50);
+else if (Controller.ButtonR1.pressing() && Controller.ButtonL2.pressing() && pressingButtonL2==false){
+  spinIntake(50); Controller.Screen.print("i should be spinning half speed");
 }
 else if (Controller.ButtonR2.pressing() && Controller.ButtonL2.pressing()){
   spinIntake(-50);
@@ -154,6 +156,8 @@ hold shift key and press R1 again to get intake back down
 **/
 
 void armControl() {
+
+
   /**
 //try two 
 if (Controller.ButtonL1.pressing()){
@@ -192,16 +196,40 @@ if (Controller.ButtonL1.pressing()){
   } **/
 }
 
-void trayControl() {
+bool trayMovingBackAutomat = false;
 
-  //test stuff
-  if (Controller.ButtonL2.pressing()){
-    moveTray(70);
-  } else if (Controller.ButtonL1.pressing()){
-    moveTray(-70);
-  } else {
+void moveBackAutomatically(){
+  pressingButtonL2 = true;
+  trayMovingBackAutomat = true;
+  if (trayLimit.value() == 0){    //if limit switch is not being hit, tray is up in air
+    while(trayLimit.value() != 1){  //so...until limit switch is hit, move tray
+      tray.spin(fwd, 100, pct);
+    }
+  }
+  trayMovingBackAutomat = false;
+  pressingButtonL2 = false;
+}
+
+void trayControl() {
+  //if limit switch hit, reset encoder to zero
+  if (trayLimit.value() == 1){
+    tray.resetRotation();
+  }
+  Controller.ButtonL2.pressed(moveBackAutomatically);
+
+  if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
+    moveTray(90);  
+    pressingButtonL2 = true;                           
+  } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
+    if (tray.rotation(rev) > -5){
+      moveTray(-80);
+    } else {
+      moveTray(-30);
+    }
+  } else if (trayMovingBackAutomat == false){
     moveTray(0);
   }
+  pressingButtonL2 = false;
 }
   /**
 
