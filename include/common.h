@@ -154,10 +154,38 @@ hold shift key and press R1 and R2(shift key) to get intake arm up to tower heig
 hold shift key and press R1 again to get intake back down 
 **/
 
-void armControl() {
+void armUpLowTower(){ //move arm from current position to low tower
+Controller.Screen.print("ishould raise arms");
+  tray.rotateTo(-1, vex::rotationUnits::rev, 10, vex::velocityUnits::pct, true); //tray move a bit
 
+  //this is where the arm figures out how much to rotate up 
+  double lowTowerHeight = XXX; //ending revolution measurement (final position, down all the way, intaking position)
+  double currentEncoderPosition = arm.rotation(rev); //current revolutions of arm motor encoder
+  double travelTowards = lowTowerHeight - currentEncoderPosition; 
+  arm.rotateTo(-travelTowards, vex::rotationUnits::rev, 10, vex::velocityUnits::pct,true);
+}
 
+void armUpMidTower(){
+  //move arm from current position to mid tower
+  double midTowerHeight = XXX; //ending revolution measurement (final position, down all the way, intaking position)
+  double currentEncoderPosition = arm.rotation(rev); //current revolutions of arm motor encoder
+  double travelTowards = midTowerHeight - currentEncoderPosition;
+  arm.rotateTo(-travelTowards, vex::rotationUnits::rev, 10, vex::velocityUnits::pct,true);
+}
 
+void armDownIntakePos(){
+  //move arm from current position to intake position
+  double lowTowerHeight = 0; //ending revolution measurement (final position, down all the way, intaking position)
+  double currentEncoderPosition = arm.rotation(rev); //current revolutions of arm motor encoder
+  double travelTowards = lowTowerHeight - currentEncoderPosition;
+  arm.rotateTo(-travelTowards, vex::rotationUnits::rev, 10, vex::velocityUnits::pct,true);
+
+}
+
+void armControl() {   //big function for controlling arms
+Controller.ButtonX.pressed(armUpLowTower); //when X is pressed once, move arm to mid twr
+Controller.ButtonY.pressed(armUpMidTower); //when Y is pressed once, move arm to low tower
+Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return tray to lower
   /**
 //try two 
 if (Controller.ButtonL1.pressing()){

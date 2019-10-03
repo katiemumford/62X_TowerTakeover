@@ -1,5 +1,6 @@
 #include "vex.h"
 #include "./common.h"
+#include "./vex_motorgroup.h" //katie added this just in case we need to use this class oct. 3
 #include <cmath>
 #include <ratio>
 #include <vector>
