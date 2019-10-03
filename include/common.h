@@ -9,18 +9,10 @@ using namespace vex;
 //ALL BASIC AND DRIVER FUNCTIONS FOUND HERE
 
 /**dean code
-int minPct = 5; //minimum controller value (%) for drive, accounts for stick drift
-bool intaking = false;  //whether the intake has been toggled
-int intakeWait = 0; //time since last toggle
-**/
-
 //katie code, adapted dean's intake toggle code for the arm
 int minPct = 5; //minimum controller value (%) for drive, accounts for stick drift
 bool armMoving = false;  //whether the arm has been toggled
 int armWait = 0; //time since last arm toggle
-
-
-
 
 bool tiltingForward = false; //whether the tilt has been toggled to go forward
 int tiltWait = 0; // time since last titl forward toggle
@@ -31,13 +23,8 @@ int restPotVal = 2780;
 // Limit switch for hitting the tray
 bool trayLimitHit = false;
 
-//while program running, look at cortex, and see all things that are plugged in, look 
-//at ports in question for potentiometer value...want the revolutions value (encoder value)
-//normally and then what you want
-
-
 //////////BASIC_FUNCTIONS//////////
-#pragma region
+#pragma region...
 
 void drive(double l,  double r) { //percent drive
   if (l < minPct && l > -minPct) { l = 0; }
@@ -97,7 +84,6 @@ void moveTray(int pct) {
 }
 #pragma endregion
 
-
 //////////DRIVER_FUNCTIONS//////////
 #pragma region
 
@@ -105,7 +91,7 @@ void moveTray(int pct) {
 Sept 23, 2019
 Katie wants to change the program 
 **/ 
-
+/////////////////INTAKE////////////////////////////////////////////////////////////////////////////////////////////
 void intakeControl() {
 
 //if R1 is pressed, intake intakes at 100 until unpressed
@@ -113,7 +99,7 @@ void intakeControl() {
 //if R1 and (shiftKey) L2 pressed, intake intakes at 50 until unpressed
 //if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
 
-if (Controller.ButtonL2.pressing() && Controller.ButtonL1.pressing()){
+if (Controller.ButtonL2.pressing() && Controller.ButtonL1.pressing()){ //DO THESE WORK??? LOL WUT
   spinIntake(40);
 } else if (Controller.ButtonL2.pressing()&& Controller.ButtonL2.pressing()){
   spinIntake(-40);
@@ -128,31 +114,8 @@ else{
   spinIntake(0);
 }
 }
-  
-  /** dean code
-  //if R1 is pressed 200ms since last press, toggle intake on/off
-  if (Controller.ButtonR1.pressing() && vex::timer::system() > intakeWait + 200) {
-    intaking = !intaking;
-    intakeWait = vex::timer::system();
-  } 
-  if (Controller.ButtonR2.pressing()) { //hold R2 to rev intake
-    spinIntake(-100);
-    intaking = false;
-  } else if (intaking || Controller.ButtonB.pressing()) { //hold B to intake (optional)
-    spinIntake(100);
-  } else {
-    spinIntake(0);
-  }
-  **/
 
-
-/**
-default you press R1 once and tray goes to stacked position (tuned)
-press the same button again and returns to intake position
-
-hold shift key and press R1 and R2(shift key) to get intake arm up to tower height
-hold shift key and press R1 again to get intake back down 
-**/
+/////////////////ARM CONTROL///////////////////////////////////////////////////////////////////////////////////////
 
 void armUpLowTower(){ //move arm from current position to low tower
 Controller.Screen.print("ishould raise arms");
@@ -186,44 +149,9 @@ void armControl() {   //big function for controlling arms
 Controller.ButtonX.pressed(armUpLowTower); //when X is pressed once, move arm to mid twr
 Controller.ButtonY.pressed(armUpMidTower); //when Y is pressed once, move arm to low tower
 Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return tray to lower
-  /**
-//try two 
-if (Controller.ButtonL1.pressing()){
-  buttonL1Pressed = true;
-} else if (buttonL1Pressed) {
-  moveArm(100); //add encoder value? talk to dean 
-  buttonL1Pressed = false;
-} else if (Controller.ButtonL1.pressing() && buttonL1Pressed == false){
-  moveArm(-100);
 }
 
- //if L2 and L1 are pressed 200ms since last press, toggle arm on/off
-  if (Controller.ButtonL1.pressing() && Controller.ButtonL2.pressing() && vex::timer::system() > armWait + 200) {
-    armMoving = true;
-    armWait = vex::timer::system();
-  } 
-  if (Controller.ButtonL1.pressing() && Controller.ButtonL2.pressing() && armMoving ) { //if holding both buttons for the first time
-    moveArm(100);  //move arm up to tower height and power 
-    armMoving = false;
-  } else if (Controller.ButtonL1.pressing() && Controller.ButtonL2.pressing() && !armMoving ) {
-    moveArm(-100); 
-    //figure out exact amount to go back down
-    //moveArm needs macro to tilt tray a little bit
-  } else {
-    moveArm(0);
-  }
-  **/ 
-
-  /** dean code
-  if (Controller.ButtonL1.pressing()) { //hold L1 to move intake arm up
-    moveArm(100);
-  } else if (Controller.ButtonL2.pressing()) {  //hold L2 to move intake arm down
-    moveArm(-70); 
-  } else {
-    moveArm(0);
-  } **/
-}
-
+/////////////////TRAY CONTROL///////////////////////////////////////////////////////////////////////////////////////
 bool trayMovingBackAutomat = false;
 
 void moveBackAutomatically(){
@@ -255,35 +183,9 @@ void trayControl() {
     moveTray(0);
   }
 }
-  /**
-
-//if L1 is pressed 200ms since last press, toggle tilt on/off for forwards then backwards
-  if (Controller.ButtonL1.pressing() && vex::timer::system() > tiltWait + 200) {
-    tiltingForward = true;    //don't totally know what this does but dean had it?
-    tiltWait = vex::timer::system();
-  } 
-  if (Controller.ButtonR1.pressing() && tiltingForward) { //if toggle already pressed and titling forward,
-    moveTray(100); //FIGURE OUT PROPER TILt TO GO FORWARD
-    tiltingForward = false; 
-  } else if (Controller.ButtonL1.pressing() && !tiltingForward) { //hold B to intake (optional)
-    moveTray(-100); //FIGURE OUT PROPER TILT TO GO BACK
-  } else {
-    moveTray(0);
-  }
-
-  //manual control buttons 
-  if (Controller.ButtonX.pressing()) {  //hold X to move tray up
-    moveTray(80);
-  } else if (Controller.ButtonA.pressing()) {  //hold A to move tray down
-    moveTray(-80);
-  } else {
-    moveTray(0);
-  }
-}
-**/
 #pragma endregion
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////AUTON_FUNCTIONS//////////
 #pragma region
 
