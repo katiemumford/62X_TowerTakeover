@@ -8,7 +8,6 @@ using namespace vex;
 
 //ALL BASIC AND DRIVER FUNCTIONS FOUND HERE
 
-/**dean code
 //katie code, adapted dean's intake toggle code for the arm
 int minPct = 5; //minimum controller value (%) for drive, accounts for stick drift
 bool armMoving = false;  //whether the arm has been toggled
