@@ -23,6 +23,8 @@ int restPotVal = 2780;
 // Limit switch for hitting the tray
 bool trayLimitHit = false;
 
+bool intaking = false;
+
 //////////BASIC_FUNCTIONS//////////
 #pragma region...
 
@@ -106,12 +108,15 @@ if (Controller.ButtonL2.pressing() && Controller.ButtonL1.pressing()){ //DO THES
 }
 else if (Controller.ButtonR1.pressing()){
   spinIntake(100);
+  intaking = true;
 }
 else if(Controller.ButtonR2.pressing()){
   spinIntake(-100);
+  intaking = true;
 }
 else{
   spinIntake(0);
+  intaking = false;
 }
 }
 
@@ -162,6 +167,18 @@ void moveBackAutomatically(){
     }
   }
   trayMovingBackAutomat = false;
+
+  //////////////alternate version
+  /**
+
+  if (trayLimit.value() == 0) {         //if limit switch not hit, move tray
+    tray.spin(fwd, 100, pct);
+  } else if (trayLimit.value() == 1) {    //if limit switch hit, stop moving and set bool to false
+    moveTray(0);                          //to signifty that this function is done running
+    trayMovingBackAutomat = false;
+  }
+
+  **/
 }
 
 void trayControl() {
