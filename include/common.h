@@ -1,6 +1,8 @@
 #include "./vex.h"
 #include "./config.h"
 #include "./vex_global.h"
+#include "C:/Program Files (x86)/VEX Robotics/VEXcode/sdk/vexv5/include/vex_global.h"
+#include "C:/Program Files (x86)/VEX Robotics/VEXcode/sdk/vexv5/include/vex_units.h"
 #include <cmath>
 #include <ratio>
 #include <vector>
@@ -21,8 +23,12 @@ int restPotVal = 2780;
 
 // Limit switch for hitting the tray
 bool trayLimitHit = false;
-
+//Is the intake Spinning
 bool intaking = false;
+//Tower heights
+double bottomHeight = 0; 
+double lowTowerHeight = 0.25; 
+double midTowerHeight = 0.5;  
 
 //////////BASIC_FUNCTIONS//////////
 #pragma region...
@@ -121,38 +127,31 @@ else{
 
 /////////////////ARM CONTROL///////////////////////////////////////////////////////////////////////////////////////
 
-void armUpLowTower(){ //move arm from current position to low tower
-Controller.Screen.print("ishould raise arms");
-  tray.rotateTo(-1, vex::rotationUnits::rev, 10, vex::velocityUnits::pct, true); //tray move a bit
-
-  //this is where the arm figures out how much to rotate up 
-  double lowTowerHeight = XXX; //ending revolution measurement (final position, down all the way, intaking position)
-  double currentEncoderPosition = arm.rotation(rev); //current revolutions of arm motor encoder
-  double travelTowards = lowTowerHeight - currentEncoderPosition; 
-  arm.rotateTo(-travelTowards, vex::rotationUnits::rev, 10, vex::velocityUnits::pct,true);
+void armLowTower(){ //move arm from current position to low tower
+  arm.startRotateTo(lowTowerHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct);
 }
 
-void armUpMidTower(){
-  //move arm from current position to mid tower
-  double midTowerHeight = XXX; //ending revolution measurement (final position, down all the way, intaking position)
-  double currentEncoderPosition = arm.rotation(rev); //current revolutions of arm motor encoder
-  double travelTowards = midTowerHeight - currentEncoderPosition;
-  arm.rotateTo(-travelTowards, vex::rotationUnits::rev, 10, vex::velocityUnits::pct,true);
+void armMidTower(){
+  arm.startRotateTo(midTowerHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct);
 }
-
-void armDownIntakePos(){
-  //move arm from current position to intake position
-  double lowTowerHeight = 0; //ending revolution measurement (final position, down all the way, intaking position)
-  double currentEncoderPosition = arm.rotation(rev); //current revolutions of arm motor encoder
-  double travelTowards = lowTowerHeight - currentEncoderPosition;
-  arm.rotateTo(-travelTowards, vex::rotationUnits::rev, 10, vex::velocityUnits::pct,true);
+void armBottom(){
+  arm.startRotateTo(bottomHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct);
 
 }
 
 void armControl() {   //big function for controlling arms
-Controller.ButtonX.pressed(armUpLowTower); //when X is pressed once, move arm to mid twr
-Controller.ButtonY.pressed(armUpMidTower); //when Y is pressed once, move arm to low tower
-Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return tray to lower
+if (intaking&& arm.value()){
+
+  
+}
+if (Controller.ButtonX.pressing() || Controller.ButtonY.pressing() || Controller.ButtonB.pressing()){
+  Controller.ButtonX.pressed(armLowTower); //when X is pressed once, move arm to mid twr
+  Controller.ButtonY.pressed(armMidTower); //when Y is pressed once, move arm to low tower
+  Controller.ButtonB.pressed(armBottom); //when B is pressed once, return tray to lower
+}
+else{
+  arm.stop(vex::brakeType::brake);
+}
 }
 
 /////////////////TRAY CONTROL///////////////////////////////////////////////////////////////////////////////////////
