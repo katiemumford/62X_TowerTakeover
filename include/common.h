@@ -1,7 +1,6 @@
 #include "./vex.h"
 #include "./config.h"
 #include "./vex_global.h"
-#include "C:/Program Files (x86)/VEX Robotics/VEXcode/sdk/vexv5/include/vex_global.h"
 #include "C:/Program Files (x86)/VEX Robotics/VEXcode/sdk/vexv5/include/vex_units.h"
 #include <cmath>
 #include <ratio>
@@ -14,7 +13,7 @@ using namespace vex;
 int minPct = 5; //minimum controller value (%) for drive, accounts for stick drift
 bool armMoving = false;  //whether the arm has been toggled
 int armWait = 0; //time since last arm toggle
-
+double trayUpSlightly = -1.37;
 bool tiltingForward = false; //whether the tilt has been toggled to go forward
 int tiltWait = 0; // time since last titl forward toggle
 
@@ -27,8 +26,8 @@ bool trayLimitHit = false;
 bool intaking = false;
 //Tower heights
 double bottomHeight = 0; 
-double lowTowerHeight = 0.25; 
-double midTowerHeight = 0.5;  
+double lowTowerHeight = 1.9; 
+double midTowerHeight = 2.5;  
 
 //////////BASIC_FUNCTIONS//////////
 #pragma region...
@@ -103,15 +102,8 @@ void intakeControl() {
 
 //if R1 is pressed, intake intakes at 100 until unpressed
 //if R2 pressed, intake outakes at -100 until unpressed
-//if R1 and (shiftKey) L2 pressed, intake intakes at 50 until unpressed
-//if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
 
-if (Controller.ButtonL2.pressing() && Controller.ButtonL1.pressing()){ //DO THESE WORK??? LOL WUT
-  spinIntake(40);
-} else if (Controller.ButtonL2.pressing()&& Controller.ButtonL2.pressing()){
-  spinIntake(-40);
-}
-else if (Controller.ButtonR1.pressing()){
+if (Controller.ButtonR1.pressing()){
   spinIntake(100);
   intaking = true;
 }
@@ -128,36 +120,39 @@ else{
 /////////////////ARM CONTROL///////////////////////////////////////////////////////////////////////////////////////
 
 void armLowTower(){ //move arm from current position to low tower
-  arm.startRotateTo(lowTowerHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct);
+  armMoving = true;
+  tray.rotateTo(trayUpSlightly, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,false);
+  arm.rotateTo(lowTowerHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+  armMoving = false;
 }
 
 void armMidTower(){
-  arm.startRotateTo(midTowerHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct);
+  armMoving = true;
+  tray.rotateTo(trayUpSlightly, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,false);
+  arm.rotateTo(midTowerHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+  armMoving = false;
 }
 void armBottom(){
-  arm.startRotateTo(bottomHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct);
-
+  armMoving = true;
+  arm.rotateTo(bottomHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+  
+  armMoving = false;
 }
 
 void armControl() {   //big function for controlling arms
-if (intaking&& arm.value()){
-
-  
-}
-if (Controller.ButtonX.pressing() || Controller.ButtonY.pressing() || Controller.ButtonB.pressing()){
-  Controller.ButtonX.pressed(armLowTower); //when X is pressed once, move arm to mid twr
-  Controller.ButtonY.pressed(armMidTower); //when Y is pressed once, move arm to low tower
+  Controller.ButtonA.pressed(armLowTower); //when X is pressed once, move arm to mid twr
+  Controller.ButtonX.pressed(armMidTower); //when Y is pressed once, move arm to low tower
   Controller.ButtonB.pressed(armBottom); //when B is pressed once, return tray to lower
-}
-else{
-  arm.stop(vex::brakeType::brake);
-}
+  if (arm.value()<50 && intaking && !armMoving){
+    arm.spin(vex::directionType::rev, 2, vex::voltageUnits::volt);
+  }
 }
 
-/////////////////TRAY CONTROL///////////////////////////////////////////////////////////////////////////////////////
+//////// /////////TRAY CONTROL///////////////////////////////////////////////////////////////////////////////////////
 bool trayMovingBackAutomat = false;
 
 void moveBackAutomatically(){
+  /*
   trayMovingBackAutomat = true;
   if (trayLimit.value() == 0){    //if limit switch is not being hit, tray is up in air
     while(trayLimit.value() != 1){  //so...until limit switch is hit, move tray
@@ -165,18 +160,13 @@ void moveBackAutomatically(){
     }
   }
   trayMovingBackAutomat = false;
-
-  //////////////alternate version
-  /**
-
+*/
   if (trayLimit.value() == 0) {         //if limit switch not hit, move tray
     tray.spin(fwd, 100, pct);
-  } else if (trayLimit.value() == 1) {    //if limit switch hit, stop moving and set bool to false
+  } else{    //if limit switch hit, stop moving and set bool to false
     moveTray(0);                          //to signifty that this function is done running
     trayMovingBackAutomat = false;
   }
-
-  **/
 }
 
 void trayControl() {
@@ -185,7 +175,7 @@ void trayControl() {
     tray.resetRotation();
   }
   Controller.ButtonL2.pressed(moveBackAutomatically);
-
+  if (!armMoving){
   if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
     moveTray(90);                           
   } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
@@ -194,8 +184,9 @@ void trayControl() {
     } else {
       moveTray(-30);
     }
-  } else if (trayMovingBackAutomat == false){
+  } else if (trayMovingBackAutomat == false ){
     moveTray(0);
+  }
   }
 }
 #pragma endregion

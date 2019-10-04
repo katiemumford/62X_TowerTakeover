@@ -89,6 +89,7 @@ void usercontrol (void) {
     intakeControl();
     armControl();
     trayControl();
+    armControl();
     vex::task::sleep(20); 
   }
 }
