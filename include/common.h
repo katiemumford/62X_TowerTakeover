@@ -10,8 +10,6 @@ using namespace vex;
 
 //katie code, adapted dean's intake toggle code for the arm
 int minPct = 5; //minimum controller value (%) for drive, accounts for stick drift
-bool armMoving = false;  //whether the arm has been toggled
-int armWait = 0; //time since last arm toggle
 
 bool tiltingForward = false; //whether the tilt has been toggled to go forward
 int tiltWait = 0; // time since last titl forward toggle
@@ -22,7 +20,17 @@ int restPotVal = 2780;
 // Limit switch for hitting the tray
 bool trayLimitHit = false;
 
-bool intaking = false;
+bool intaking = false;  //for armControl to know whether to apply downword force or just brake
+
+//values and bools for armControl
+bool armMoving = false; 
+double trayForwardArmUp = 1.5;      //amount of rev tray moves forward for arms
+double lowTowerHeight = 1.9;       //amount of rev arm moves up for low tower
+double midTowerHeight = 2.5; 
+double bottomHeight = 0;      //amount of rev arm moves up for mid tower
+
+//tray moves back the same amount
+//arms move back down to zero revs
 
 //////////BASIC_FUNCTIONS//////////
 #pragma region...
@@ -62,6 +70,7 @@ void spinIntake(int pct) {
 void moveArm(int pct) {
   if (pct != 0) {
     arm.spin(vex::directionType::fwd, pct, vex::velocityUnits::pct);
+    Controller.Screen.print("bruh");
   } else {
     arm.stop(vex::brakeType::brake);
   }
@@ -88,10 +97,6 @@ void moveTray(int pct) {
 //////////DRIVER_FUNCTIONS//////////
 #pragma region
 
-/**
-Sept 23, 2019
-Katie wants to change the program 
-**/ 
 /////////////////INTAKE////////////////////////////////////////////////////////////////////////////////////////////
 void intakeControl() {
 
@@ -100,10 +105,12 @@ void intakeControl() {
 //if R1 and (shiftKey) L2 pressed, intake intakes at 50 until unpressed
 //if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
 
-if (Controller.ButtonL2.pressing() && Controller.ButtonL1.pressing()){ //DO THESE WORK??? LOL WUT
+if (Controller.ButtonL2.pressing() && Controller.ButtonR1.pressing()){ //DO THESE WORK??? LOL WUT
   spinIntake(40);
+  intaking = true;
 } else if (Controller.ButtonL2.pressing()&& Controller.ButtonL2.pressing()){
   spinIntake(-40);
+  intaking = true;
 }
 else if (Controller.ButtonR1.pressing()){
   spinIntake(100);
@@ -121,39 +128,105 @@ else{
 
 /////////////////ARM CONTROL///////////////////////////////////////////////////////////////////////////////////////
 
-void armUpLowTower(){ //move arm from current position to low tower
-Controller.Screen.print("ishould raise arms");
-  tray.rotateTo(-1, vex::rotationUnits::rev, 10, vex::velocityUnits::pct, true); //tray move a bit
 
-  //this is where the arm figures out how much to rotate up 
-  double lowTowerHeight = XXX; //ending revolution measurement (final position, down all the way, intaking position)
-  double currentEncoderPosition = arm.rotation(rev); //current revolutions of arm motor encoder
-  double travelTowards = lowTowerHeight - currentEncoderPosition; 
-  arm.rotateTo(-travelTowards, vex::rotationUnits::rev, 10, vex::velocityUnits::pct,true);
+void armControl() {   //big function for controlling arms
+
+ if (Controller.ButtonX.pressing()){   //if X is continously pressed
+  moveArm(80);
+  if (tray.rotation(rev) > -1){
+      moveTray(-80);
+    } else {
+      moveTray(0);
+    }
+ } else if (Controller.ButtonB.pressing()){
+   moveArm(-50);
+   Controller.Screen.print("i should be going down");
+ } else {
+   moveArm(0);
+ }
+}
+
+/** works
+if (Controller.ButtonX.pressing()){
+   Controller.Screen.print("i am pressed");
+  armMoving =true;
+  moveArm(100);
+} else if (Controller.ButtonB.pressing()){
+  moveArm(-100);
+  armMoving = true;
+} else {
+  moveArm(0);
+
+  armMoving = false;
+}
+**/
+ 
+
+//when x is continously pressed, the tray should move forward a little bit 
+
+
+/**
+if (!armMoving){
+  arm.stop(hold);
+}
+
+void armUpLowTower(){ //move arm from current position to low tower
+  Controller.Screen.print("x was pressed i should move up");
+  armMoving = true;
+  tray.rotateTo(-1, vex::rotationUnits::rev, 50, vex::velocityUnits::pct,false);
+  arm.rotateTo(lowTowerHeight, vex::rotationUnits::rev, 50, vex::velocityUnits::pct,true);
+  armMoving = false;
+
 }
 
 void armUpMidTower(){
   //move arm from current position to mid tower
-  double midTowerHeight = XXX; //ending revolution measurement (final position, down all the way, intaking position)
-  double currentEncoderPosition = arm.rotation(rev); //current revolutions of arm motor encoder
-  double travelTowards = midTowerHeight - currentEncoderPosition;
-  arm.rotateTo(-travelTowards, vex::rotationUnits::rev, 10, vex::velocityUnits::pct,true);
+  armMoving = true;
+  tray.rotateTo(-trayForwardArmUp, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+  arm.rotateTo(midTowerHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+  armMoving = false;
+
 }
 
 void armDownIntakePos(){
   //move arm from current position to intake position
-  double lowTowerHeight = 0; //ending revolution measurement (final position, down all the way, intaking position)
-  double currentEncoderPosition = arm.rotation(rev); //current revolutions of arm motor encoder
-  double travelTowards = lowTowerHeight - currentEncoderPosition;
-  arm.rotateTo(-travelTowards, vex::rotationUnits::rev, 10, vex::velocityUnits::pct,true);
+  
+  armMoving = true;
+  tray.rotateTo(trayForwardArmUp, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+  arm.rotateTo(bottomHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+  armMoving = false;
 
 }
-
 void armControl() {   //big function for controlling arms
+
+if (arm.value()<50 && intaking && !armMoving){
+     arm.spin(vex::directionType::rev, 2, vex::voltageUnits::volt);
+   }
+
 Controller.ButtonX.pressed(armUpLowTower); //when X is pressed once, move arm to mid twr
 Controller.ButtonY.pressed(armUpMidTower); //when Y is pressed once, move arm to low tower
 Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return tray to lower
+
+if (intaking && !armMoving && arm.value()<50){                      //apply downword volume when intaking
+ arm.spin(vex::directionType::rev, 2, vex::voltageUnits::volt);
+} else {
+  arm.stop(vex::brakeType::brake);                                //brake any other time
 }
+
+
+Controller.ButtonX.pressed(armUpLowTower); //when X is pressed once, move arm to mid twr
+Controller.ButtonY.pressed(armUpMidTower); //when Y is pressed once, move arm to low tower
+Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return tray to lower
+
+   if (arm.value()<50 && intaking && !armMoving){
+     arm.spin(vex::directionType::rev, 2, vex::voltageUnits::volt);
+   }
+ }
+**/
+
+
+
+
 
 /////////////////TRAY CONTROL///////////////////////////////////////////////////////////////////////////////////////
 bool trayMovingBackAutomat = false;
@@ -166,7 +239,6 @@ void moveBackAutomatically(){
     }
   }
   trayMovingBackAutomat = false;
-
   //////////////alternate version
   /**
 

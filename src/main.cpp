@@ -80,15 +80,43 @@ void pre_auton( void ) {
   vex::task p(pre_autonTask);
 }
 
+bool isBraking = false;
+
+
+void armBrakeToggle(){
+  while (true){
+  if (Controller.ButtonA.pressing()){
+      
+    isBraking = !isBraking;
+    while(Controller.ButtonA.pressing()){
+      vex::task::sleep(10); 
+    }
+
+    if(isBraking){
+      arm.setBrake(hold);
+      Controller.Screen.print("set hold");
+    } else {
+      arm.setBrake(coast);
+      Controller.Screen.print("set coast");
+    }
+  }
+  vex::task::sleep(10); 
+  }
+}
 void usercontrol (void) { 
   preAutonBool = false;
   vex::task::stop(pre_autonTask);
   Brain.Screen.clearScreen(vex::color::black); //stops pre auton and clears screen
+
+  vex::thread buttonAToggleTask(armBrakeToggle);
+
+
   while (1) {
     vdrive(Controller.Axis3.value()*100/127.0, Controller.Axis2.value()*100/127.0);
     intakeControl();
     armControl();
     trayControl();
+  
     vex::task::sleep(20); 
   }
 }
