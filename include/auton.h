@@ -41,6 +41,32 @@ void noAuton() {
   deployTray();
 }
 
+void katieCode(){
+
+  //drive forward a teeny bit
+  //drive back a teeny bit 
+  //deploy, start intaking
+  //drive forward a teeny bit
+  //stop intaking
+  //turn
+  //go forward to goal
+  //outtake 
+  //back up
+  //tray up
+  deployTray();  
+
+  
+
+  //go forward and intake pre load
+  //turn to goal zone
+  //drive to goal zone
+  //out take cube 
+  
+  //moveTray(0);
+  //back away 
+  //put tray forward 
+}
+
 void red1() {
   deployTray();
   
@@ -92,6 +118,7 @@ void red2() {
   basicEncoderDrive(40, -distance2d, true);
   */
 }
+
 
 
 void blue1() {

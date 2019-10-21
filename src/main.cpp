@@ -127,10 +127,11 @@ void theAuton(void) {
 }
 
 int main() {
-    Competition.autonomous(theAuton);
+    Competition.autonomous(katieCode);
     Competition.drivercontrol(usercontrol);
     pre_auton();                        
     while(1) {
       vex::task::sleep(100);
+
     }        
 }
