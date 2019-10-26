@@ -19,7 +19,7 @@ std::vector<Auton> autons = {
   {noAuton, "No Auton"}, 
   {red1, "Red 1"},
   {red2, "Red 2"}, 
-  {blue1, "Blue 1"},
+  {blue1, "Blue 1"}, 
   {blue2, "Blue 2"},
   {test, "test"}
 };
@@ -127,7 +127,7 @@ void theAuton(void) {
 }
 
 int main() {
-    Competition.autonomous(Test);
+    Competition.autonomous(katieCode);
     Competition.drivercontrol(usercontrol);
     pre_auton();                        
     while(1) {

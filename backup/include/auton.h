@@ -1,5 +1,6 @@
 #include "vex.h"
 #include "./common.h"
+#include "./vex_motorgroup.h" //katie added this just in case we need to use this class oct. 3
 #include <cmath>
 #include <ratio>
 #include <vector>
@@ -22,53 +23,48 @@ double turn2b = 0.5; //turn toward zone
 double distance2c = 0.2*squareDistance; //drive to zone
 double distance2d = distance2d;//back away from zone
 
+void deployTray() {
+  moveArm(100);
+  wait(800);
+  moveArm(-70);
+  wait(800);
+  moveArm(0);
+}
+
+void outtakeSome() {
+spinIntake(-50);
+  wait(300);
+  spinIntake(0);
+}
+
 void noAuton() {
   deployTray();
 }
 
-void redAuto(){
-  setBraking();
-  resetGyro();
-  
-  deployTray();
-  spinIntake(100);
+void katieCode(){
 
-  basicEncoderDrive(30,4,true);
-  spinIntake(0);
-
-  basicEncoderDrive(30,-4,true);
-
-  gyroTurn2(95,25);
-
-  basicEncoderDrive(30,1,true, 2);
-
-  moveTray(-90);
-
-  wait(3000);
-
-  moveTray(0);
-
-  spinIntake(-28);
-
-  basicEncoderDrive(15,-1,true, 2);
-
-
-
-
-  //gyroTurn2(90, 25);
-  //gyroTurn2(180, 25);
-  //gyroTurn2(-180, 25);
-  //gyroTurn2(0, 25);
+  //drive forward a teeny bit
+  //drive back a teeny bit 
+  //deploy, start intaking
+  //drive forward a teeny bit
+  //stop intaking
+  //turn
+  //go forward to goal
+  //outtake 
+  //back up
+  //tray up
+  deployTray();  
 
   
-/**
-  resetGyro();
-  gyroTurn2(90, 25);
-  gyroTurn2(180, 25);
-  gyroTurn2(-180, 25);
-  gyroTurn2(0,25);
-  */
 
+  //go forward and intake pre load
+  //turn to goal zone
+  //drive to goal zone
+  //out take cube 
+  
+  //moveTray(0);
+  //back away 
+  //put tray forward 
 }
 
 void red1() {

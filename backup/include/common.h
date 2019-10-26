@@ -4,9 +4,6 @@
 #include <cmath>
 #include <ratio>
 #include <vector>
-#include <time.h>
-
-
 using namespace vex;
 
 //ALL BASIC AND DRIVER FUNCTIONS FOUND HERE
@@ -278,179 +275,26 @@ void trayControl() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////AUTON_FUNCTIONS//////////
-void wait(int millis) {
-  vex::task::sleep(millis);
-}
-
-void deployTray() {
-  moveArm(100);
-  wait(800);
-  moveArm(-70);
-  wait(800);
-  moveArm(0);
-}
-
-void outtakeSome() {
-spinIntake(-50);
-  wait(300);
-  spinIntake(0);
-}
-
-void setBraking() {
-  lF.setStopping(vex::brakeType::brake);
-  rF.setStopping(vex::brakeType::brake);
-  lB.setStopping(vex::brakeType::brake);
-  rB.setStopping(vex::brakeType::brake);
-}
-
-void setHolding() {
-  lF.setStopping(vex::brakeType::hold);
-  rF.setStopping(vex::brakeType::hold);
-  lB.setStopping(vex::brakeType::hold);
-  rB.setStopping(vex::brakeType::hold);
-}
-
-void setCoasting() {
-  lF.setStopping(vex::brakeType::coast);
-  rF.setStopping(vex::brakeType::coast);
-  lB.setStopping(vex::brakeType::coast);
-  rB.setStopping(vex::brakeType::coast);
-}
-void stopAll() {
-  lF.stop();
-  lB.stop();
-  rF.stop();
-  rB.stop();
-}
-
-void turn2(double speed) { drive(speed, -speed); }
-
-void gyroTurn(double target) {
-  target = Gyro.value(vex::analogUnits::range12bit) + target * 10 + target * 41 / 90;
-  double error = target - Gyro.value(vex::analogUnits::range12bit);
-  double totalError = 0;
-
-  double kp = 0.064;
-  double ki = 0.009;
-
-  while (std::abs(error) > 2) {
-    vex::task::sleep(6);
-    error = target - Gyro.value(vex::analogUnits::range12bit);
-    totalError += error;
-    if (std::abs(error) > 69) {
-      totalError = 0;
-    }
-    turn2(error * kp + totalError * ki);  
-  }
-  setHolding();
-  stopAll();
-}
-//DegreeAmount (0 - 360) degrees robot will turn
-//veloc (0 - 100) percent of motor power given
-void gyroTurn2 (double DegreeAmount, int veloc)
-{
-    //Set speeds of both Drive motors
-    lF.setVelocity(veloc,velocityUnits::pct);
-    rF.setVelocity(veloc,velocityUnits::pct);
-    lB.setVelocity(veloc,velocityUnits::pct);
-    rB.setVelocity(veloc,velocityUnits::pct);
-    
-    //Prints the DegreeAmount for debugging puroses to ensure that it is going for the right degree amount
-    Controller.Screen.clearScreen();
-    Controller.Screen.print(DegreeAmount);
-    Controller.Screen.print(Gyro.value(rotationUnits::deg));
-
-    //While loop to do the spin
-    if(Gyro.value(rotationUnits::deg) < DegreeAmount){
-      while (Gyro.value(rotationUnits::deg) < DegreeAmount)
-      {
-        if(Gyro.value(rotationUnits::deg) > DegreeAmount - 25){
-          lF.setVelocity(veloc/2,velocityUnits::pct);
-          rF.setVelocity(veloc/2,velocityUnits::pct);
-          lB.setVelocity(veloc/2,velocityUnits::pct);
-          rB.setVelocity(veloc/2,velocityUnits::pct);
-        }
-        
-        Controller.Screen.clearScreen();
-        Controller.Screen.print(DegreeAmount);
-        Controller.Screen.print(Gyro.value(rotationUnits::deg));
-
-        lF.spin(directionType::fwd); // Assuming this is the polarity needed for a clockwise turn
-        lB.spin(directionType::fwd);
-        rF.spin(directionType::rev);
-        rB.spin(directionType::rev);
-        
-        this_thread::sleep_for(10);
-      }
-    } else if (Gyro.value(rotationUnits::deg) > DegreeAmount) {
-      while (Gyro.value(rotationUnits::deg) > DegreeAmount)
-      {
-        if(Gyro.value(rotationUnits::deg) < DegreeAmount + 25){
-          lF.setVelocity(veloc/2,velocityUnits::pct);
-          rF.setVelocity(veloc/2,velocityUnits::pct);
-          lB.setVelocity(veloc/2,velocityUnits::pct);
-          rB.setVelocity(veloc/2,velocityUnits::pct);
-        }
-
-        Controller.Screen.clearScreen();
-        Controller.Screen.print(DegreeAmount);
-        Controller.Screen.print(Gyro.value(rotationUnits::deg));
-
-        lF.spin(directionType::rev); // Assuming this is the polarity needed for a counterclockwise turn
-        lB.spin(directionType::rev);
-        rF.spin(directionType::fwd);
-        rB.spin(directionType::fwd);
-        
-        this_thread::sleep_for(10);
-      }
-    }
-    //Stop motors after reached degree turn
-    stopAll();
-    
-    Controller.Screen.clearScreen();
-    Controller.Screen.print("Gyro Turn Finished");
-}
-
-
-void resetGyro() {
-  Controller.Screen.clearScreen();
-  Controller.Screen.print("Calibrating Gyro...");
-  Gyro.startCalibration();
-    while(Gyro.isCalibrating());
-  Controller.Screen.print("Done!");
-}
-
+#pragma region
 
 //ONE SQUARE = 1.79 rev
 //RIGHT TURN ~ 1.0rev
 
-
+void wait(int millis) {
+  vex::task::sleep(millis);
+}
 
 //drive for a given distance, uses built-in encoder function
 //program will wait for the drive to finish if wait == true
-void basicEncoderDrive(double pct, double rev, bool wait, double timeLimit) {
-  clock_t start;
-  start = clock();
-  lF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
-  lB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
-  rF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
-  if (wait) {
-      rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
-        while (clock() - start / CLOCKS_PER_SEC < timeLimit) {}
-    return;
-  }
-  rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
-}
-
 void basicEncoderDrive(double pct, double rev, bool wait) {
   lF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
   lB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
   rF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
   if (wait) {
-      rB.rotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
-    return;
+    rB.rotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  } else {
+    rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
   }
-  rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
 }
 
 //turn in place for a given distance per wheel, uses built-in encoder function
@@ -473,3 +317,4 @@ void timedDrive(double pct, int millis) {
   drive(0,0);
 }
 #pragma endregion
+
