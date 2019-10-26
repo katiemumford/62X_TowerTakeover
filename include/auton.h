@@ -64,7 +64,17 @@ void blueAuto(){
   
   spinIntake(50);
 
-  basicEncoderDrive(30,-4,true);
+  rF.setVelocity(-30,velocityUnits::pct);
+  rB.setVelocity(-30,velocityUnits::pct);
+  lF.setVelocity(-30,velocityUnits::pct);
+  lB.setVelocity(-30,velocityUnits::pct);
+
+  wait(3000);
+
+  rF.setVelocity(0,velocityUnits::pct);
+  rB.setVelocity(0,velocityUnits::pct);
+  lF.setVelocity(0,velocityUnits::pct);
+  lB.setVelocity(0,velocityUnits::pct);
 
   spinIntake(0);
 

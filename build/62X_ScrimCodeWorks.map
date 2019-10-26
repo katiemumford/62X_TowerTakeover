@@ -99,7 +99,7 @@ Discarded input sections
  .ARM.exidx.text._Z10timedDrivedi
                 0x0000000000000000        0x8 build/src/main.o
  .text._Z8blueAutov
-                0x0000000000000000      0x1c0 build/src/main.o
+                0x0000000000000000      0x280 build/src/main.o
  .ARM.exidx.text._Z8blueAutov
                 0x0000000000000000        0x8 build/src/main.o
  .group         0x0000000000000000       0x14 build/src/main.o
