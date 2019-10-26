@@ -98,6 +98,10 @@ Discarded input sections
                 0x0000000000000000       0x38 build/src/main.o
  .ARM.exidx.text._Z10timedDrivedi
                 0x0000000000000000        0x8 build/src/main.o
+ .text._Z8blueAutov
+                0x0000000000000000      0x1c0 build/src/main.o
+ .ARM.exidx.text._Z8blueAutov
+                0x0000000000000000        0x8 build/src/main.o
  .group         0x0000000000000000       0x14 build/src/main.o
  .group         0x0000000000000000       0x14 build/src/main.o
  .group         0x0000000000000000       0x14 build/src/main.o
@@ -2023,9 +2027,9 @@ Linker script and memory map
  .text._Z7noAutonv
                 0x0000000003801004        0x4 build/src/main.o
                 0x0000000003801004                noAuton()
- .text._Z4Testv
+ .text._Z7redAutov
                 0x0000000003801008      0x1a8 build/src/main.o
-                0x0000000003801008                Test()
+                0x0000000003801008                redAuto()
  .text._Z4red1v
                 0x00000000038011b0      0x1d8 build/src/main.o
                 0x00000000038011b0                red1()
@@ -2974,7 +2978,7 @@ Linker script and memory map
  .ARM.exidx.text._Z7noAutonv
                 0x0000000003804fcc        0x0 build/src/main.o
                                           0x8 (size before relaxing)
- .ARM.exidx.text._Z4Testv
+ .ARM.exidx.text._Z7redAutov
                 0x0000000003804fcc        0x0 build/src/main.o
                                           0x8 (size before relaxing)
  .ARM.exidx.text._Z4red1v

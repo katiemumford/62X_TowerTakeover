@@ -61,13 +61,16 @@ void blueAuto(){
   spinIntake(100);
 
   basicEncoderDrive(30,4,true);
-  spinIntake(0);
+  
+  spinIntake(50);
 
   basicEncoderDrive(30,-4,true);
 
+  spinIntake(0);
+
   gyroTurn2(-95,25);
 
-  basicEncoderDrive(30,1,true, 2);
+  basicEncoderDrive(30,.7,true, 2);
 
   moveTray(-90);
 
@@ -75,9 +78,8 @@ void blueAuto(){
 
   moveTray(0);
 
-  spinIntake(-28);
+  basicEncoderDrive(35,-1,true, 2);
 
-  basicEncoderDrive(15,-1,true, 2);
 }
 
 void red1() {
