@@ -51,24 +51,33 @@ void redAuto(){
   spinIntake(-28);
 
   basicEncoderDrive(15,-1,true, 2);
+}
 
-
-
-
-  //gyroTurn2(90, 25);
-  //gyroTurn2(180, 25);
-  //gyroTurn2(-180, 25);
-  //gyroTurn2(0, 25);
-
-  
-/**
+void blueAuto(){
+  setBraking();
   resetGyro();
-  gyroTurn2(90, 25);
-  gyroTurn2(180, 25);
-  gyroTurn2(-180, 25);
-  gyroTurn2(0,25);
-  */
+  
+  deployTray();
+  spinIntake(100);
 
+  basicEncoderDrive(30,4,true);
+  spinIntake(0);
+
+  basicEncoderDrive(30,-4,true);
+
+  gyroTurn2(-95,25);
+
+  basicEncoderDrive(30,1,true, 2);
+
+  moveTray(-90);
+
+  wait(3000);
+
+  moveTray(0);
+
+  spinIntake(-28);
+
+  basicEncoderDrive(15,-1,true, 2);
 }
 
 void red1() {
