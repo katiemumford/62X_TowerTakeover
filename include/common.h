@@ -347,13 +347,13 @@ void gyroTurn(double target) {
 }
 //DegreeAmount (0 - 360) degrees robot will turn
 //veloc (0 - 100) percent of motor power given
-void gyroTurn2 (double DegreeAmount, int veloc)
+void gyroTurn2 (double DegreeAmount, int velocL, int velocR)
 {
     //Set speeds of both Drive motors
-    lF.setVelocity(veloc,velocityUnits::pct);
-    rF.setVelocity(veloc,velocityUnits::pct);
-    lB.setVelocity(veloc,velocityUnits::pct);
-    rB.setVelocity(veloc,velocityUnits::pct);
+    lF.setVelocity(velocL,velocityUnits::pct);
+    rF.setVelocity(velocR,velocityUnits::pct);
+    lB.setVelocity(velocL,velocityUnits::pct);
+    rB.setVelocity(velocR,velocityUnits::pct);
     
     //Prints the DegreeAmount for debugging puroses to ensure that it is going for the right degree amount
     Controller.Screen.clearScreen();
@@ -365,10 +365,10 @@ void gyroTurn2 (double DegreeAmount, int veloc)
       while (Gyro.value(rotationUnits::deg) < DegreeAmount)
       {
         if(Gyro.value(rotationUnits::deg) > DegreeAmount - 25){
-          lF.setVelocity(veloc/2,velocityUnits::pct);
-          rF.setVelocity(veloc/2,velocityUnits::pct);
-          lB.setVelocity(veloc/2,velocityUnits::pct);
-          rB.setVelocity(veloc/2,velocityUnits::pct);
+          lF.setVelocity(velocL/2,velocityUnits::pct);
+          rF.setVelocity(velocR/2,velocityUnits::pct);
+          lB.setVelocity(velocL/2,velocityUnits::pct);
+          rB.setVelocity(velocR/2,velocityUnits::pct);
         }
         
         Controller.Screen.clearScreen();
@@ -386,10 +386,10 @@ void gyroTurn2 (double DegreeAmount, int veloc)
       while (Gyro.value(rotationUnits::deg) > DegreeAmount)
       {
         if(Gyro.value(rotationUnits::deg) < DegreeAmount + 25){
-          lF.setVelocity(veloc/2,velocityUnits::pct);
-          rF.setVelocity(veloc/2,velocityUnits::pct);
-          lB.setVelocity(veloc/2,velocityUnits::pct);
-          rB.setVelocity(veloc/2,velocityUnits::pct);
+          lF.setVelocity(velocL/2,velocityUnits::pct);
+          rF.setVelocity(velocR/2,velocityUnits::pct);
+          lB.setVelocity(velocL/2,velocityUnits::pct);
+          rB.setVelocity(velocR/2,velocityUnits::pct);
         }
 
         Controller.Screen.clearScreen();
