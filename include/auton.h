@@ -67,7 +67,7 @@ void redAuto2(){
 
   basicEncoderDrive(30, 1.5,true, 2);
 
-  gyroTurn2(10,-10,25);
+  gyroTurn2(3,-10,25);
 
   basicEncoderDrive(30,3,true);
 
@@ -77,7 +77,7 @@ void redAuto2(){
 
   gyroTurn2(95,25,25);
 
-  basicEncoderDrive(30,.35,true, 2);
+  basicEncoderDrive(30,.8,true, 2);
 
   moveTray(-90);
 
