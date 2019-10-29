@@ -34,13 +34,29 @@ void redAuto(){
   spinIntake(100);
 
   basicEncoderDrive(30,4,true);
-  spinIntake(0);
-
+  
+  /**
+  rF.setVelocity(30,velocityUnits::pct);
+  rB.setVelocity(30,velocityUnits::pct);
+  lF.setVelocity(30,velocityUnits::pct);
+  lB.setVelocity(30,velocityUnits::pct);
+  clock_t start;
+  start = clock();
+  while((clock() - start)/CLOCKS_PER_SEC < 3){
+    lF.spin(directionType::rev); // Assuming this is the polarity needed for a clockwise turn
+    lB.spin(directionType::rev);
+    rF.spin(directionType::rev);
+    rB.spin(directionType::rev);
+  }
+  stopAll()
+  */
   basicEncoderDrive(30,-4,true);
+
+  spinIntake(0);
 
   gyroTurn2(95,25);
 
-  basicEncoderDrive(30,1,true, 2);
+  basicEncoderDrive(30,.35,true, 2);
 
   moveTray(-90);
 
@@ -48,9 +64,7 @@ void redAuto(){
 
   moveTray(0);
 
-  spinIntake(-28);
-
-  basicEncoderDrive(15,-1,true, 2);
+  basicEncoderDrive(35,-1,true, 2);
 }
 
 void blueAuto(){
@@ -62,25 +76,27 @@ void blueAuto(){
 
   basicEncoderDrive(30,4,true);
   
-  spinIntake(50);
-
-  rF.setVelocity(-30,velocityUnits::pct);
-  rB.setVelocity(-30,velocityUnits::pct);
-  lF.setVelocity(-30,velocityUnits::pct);
-  lB.setVelocity(-30,velocityUnits::pct);
-
-  wait(3000);
-
-  rF.setVelocity(0,velocityUnits::pct);
-  rB.setVelocity(0,velocityUnits::pct);
-  lF.setVelocity(0,velocityUnits::pct);
-  lB.setVelocity(0,velocityUnits::pct);
+  /**
+  rF.setVelocity(30,velocityUnits::pct);
+  rB.setVelocity(30,velocityUnits::pct);
+  lF.setVelocity(30,velocityUnits::pct);
+  lB.setVelocity(30,velocityUnits::pct);
+  clock_t start;
+  start = clock();
+  while((clock() - start)/CLOCKS_PER_SEC < 3){
+    lF.spin(directionType::rev); // Assuming this is the polarity needed for a clockwise turn
+    lB.spin(directionType::rev);
+    rF.spin(directionType::rev);
+    rB.spin(directionType::rev);
+  }
+  */
+  basicEncoderDrive(30,-4,true);
 
   spinIntake(0);
 
   gyroTurn2(-95,25);
 
-  basicEncoderDrive(30,.7,true, 2);
+  basicEncoderDrive(30,.5,true, 2);
 
   moveTray(-90);
 
