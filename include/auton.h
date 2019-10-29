@@ -67,11 +67,11 @@ void redAuto2(){
 
   basicEncoderDrive(30, 1.5,true, 2);
 
-  gyroTurn2(0,-10,25);
+  gyroTurn2(10,-10,25);
 
-  basicEncoderDrive(20,3,true, 2);
+  basicEncoderDrive(30,3,true);
 
-  basicEncoderDrive(20,-3,true, 2);
+  basicEncoderDrive(30,-4,true);
 
   spinIntake(0);
 
