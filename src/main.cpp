@@ -127,7 +127,11 @@ void theAuton(void) {
 }
 
 int main() {
-    Competition.autonomous(redAuto);
+  if(!Controller.ButtonA.pressing())
+    Competition.autonomous(RedAuto2);
+  else
+    Competition.autonomous(RedAuto);
+
     Competition.drivercontrol(usercontrol);
     pre_auton();                        
     while(1) {

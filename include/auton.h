@@ -26,7 +26,7 @@ void noAuton() {
   deployTray();
 }
 
-void redAuto(){
+void RedAuto(){
   setBraking();
   resetGyro();
   
@@ -51,40 +51,55 @@ void redAuto(){
 
   basicEncoderDrive(35,-1,true, 2);
 }
+//RedAuto2, attempts to pick up 8 cubes rather than 4
+void RedAuto2() {
 
-void redAuto2(){
+  //Reset gyros and set motors to break
   setBraking();
   resetGyro();
   
+  //Get our robot ready to pick up cubes
   //deployTray();
+
+  //Start intaking
   spinIntake(100);
 
-  basicEncoderDrive(30,4,true);
+  //Drive forward to pick up 3 cubes
+  basicEncoderDrive(30,3,true);
   
-  basicEncoderDrive(30,-3,true);
+  //Drive most of the way back to the wall
+  basicEncoderDrive(30,-2.5,true);
 
+  //Turn towards the corner
   gyroTurn2(90,25,25);
 
-  basicEncoderDrive(30, 1.5,true, 2);
+  //Drive forward
+  basicEncoderDrive(30, .9,true);
 
-  gyroTurn2(3,-10,25);
+  //Swerve drive into the next group of 4
+  gyroTurn2(10,-5,25);
 
+  //Pick up 4 cubes
   basicEncoderDrive(30,3,true);
 
-  basicEncoderDrive(30,-4,true);
+  //Drive back to the corner
+  basicEncoderDrive(30,-3.5,true);
 
+  //Stop intaking
   spinIntake(0);
 
+  //Turn towards the corner
   gyroTurn2(95,25,25);
 
-  basicEncoderDrive(30,.8,true, 2);
+  //Drive up to the corner
+  basicEncoderDrive(30,.6,true);
 
+  //Place our cubes
   moveTray(-90);
-
   wait(3000);
-
   moveTray(0);
 
+  //Back away from our cubes
   basicEncoderDrive(35,-1,true, 2);
 }
 
