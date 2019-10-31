@@ -364,12 +364,14 @@ void gyroTurn2 (double DegreeAmount, int velocL, int velocR)
     if(Gyro.value(rotationUnits::deg) < DegreeAmount){
       while (Gyro.value(rotationUnits::deg) < DegreeAmount)
       {
+        /**
         if(Gyro.value(rotationUnits::deg) > DegreeAmount - 25){
           lF.setVelocity(velocL/2,velocityUnits::pct);
           rF.setVelocity(velocR/2,velocityUnits::pct);
           lB.setVelocity(velocL/2,velocityUnits::pct);
           rB.setVelocity(velocR/2,velocityUnits::pct);
         }
+        */
         
         Controller.Screen.clearScreen();
         Controller.Screen.print(DegreeAmount);
@@ -385,12 +387,14 @@ void gyroTurn2 (double DegreeAmount, int velocL, int velocR)
     } else if (Gyro.value(rotationUnits::deg) > DegreeAmount) {
       while (Gyro.value(rotationUnits::deg) > DegreeAmount)
       {
+        /**
         if(Gyro.value(rotationUnits::deg) < DegreeAmount + 25){
           lF.setVelocity(velocL/2,velocityUnits::pct);
           rF.setVelocity(velocR/2,velocityUnits::pct);
           lB.setVelocity(velocL/2,velocityUnits::pct);
           rB.setVelocity(velocR/2,velocityUnits::pct);
         }
+        */
 
         Controller.Screen.clearScreen();
         Controller.Screen.print(DegreeAmount);
@@ -411,6 +415,68 @@ void gyroTurn2 (double DegreeAmount, int velocL, int velocR)
     Controller.Screen.print("Gyro Turn Finished");
 }
 
+//DegreeAmount (0 - 360) degrees robot will turn
+//veloc (0 - 100) percent of motor power given
+void gyroTurn3 (double DegreeAmount, int velocL, int velocR)
+{
+
+    //Prints the DegreeAmount for debugging puroses to ensure that it is going for the right degree amount
+    Controller.Screen.clearScreen();
+    Controller.Screen.print(DegreeAmount);
+    Controller.Screen.print(Gyro.value(rotationUnits::deg));
+
+    //While loop to do the spin
+    if(Gyro.value(rotationUnits::deg) < DegreeAmount){
+      while (Gyro.value(rotationUnits::deg) < DegreeAmount)
+      {
+        /**
+        double val = Gyro.value(rotationUnits::deg);
+        lF.setVelocity(velocL*((DegreeAmount - val)/(DegreeAmount)),velocityUnits::pct);
+        lB.setVelocity(velocL*((DegreeAmount - val)/(DegreeAmount)),velocityUnits::pct);
+        rF.setVelocity(velocR*((DegreeAmount - val)/(DegreeAmount)),velocityUnits::pct);
+        rB.setVelocity(velocR*((DegreeAmount - val)/(DegreeAmount)),velocityUnits::pct);
+        lF.spin(directionType::fwd); // Assuming this is the polarity needed for a clockwise turn
+        lB.spin(directionType::fwd);
+        rF.spin(directionType::rev);
+        rB.spin(directionType::rev);
+        */
+        double val = Gyro.value(rotationUnits::deg);
+
+        lF.spin(vex::directionType::fwd, velocL*((DegreeAmount - val)/(DegreeAmount)), vex::percentUnits::pct);
+        lB.spin(vex::directionType::fwd, velocL*((DegreeAmount - val)/(DegreeAmount)), vex::percentUnits::pct);
+        rF.spin(vex::directionType::rev, velocR*((DegreeAmount - val)/(DegreeAmount)), vex::percentUnits::pct);
+        rB.spin(vex::directionType::rev, velocR*((DegreeAmount - val)/(DegreeAmount)), vex::percentUnits::pct);
+        
+        Controller.Screen.clearScreen();
+        Controller.Screen.print(DegreeAmount);
+        Controller.Screen.print(Gyro.value(rotationUnits::deg));
+
+        this_thread::sleep_for(10);
+      }
+    } else if (Gyro.value(rotationUnits::deg) > DegreeAmount) {
+      double initial = Gyro.value(rotationUnits::deg);
+      while (Gyro.value(rotationUnits::deg) > DegreeAmount)
+      {
+        double val = Gyro.value(rotationUnits::deg);
+
+        lF.spin(vex::directionType::rev, velocL*((val - DegreeAmount)/(initial - DegreeAmount)), vex::percentUnits::pct);
+        lB.spin(vex::directionType::rev, velocL*((val - DegreeAmount)/(initial - DegreeAmount)), vex::percentUnits::pct);
+        rF.spin(vex::directionType::fwd, velocR*((val - DegreeAmount)/(initial - DegreeAmount)), vex::percentUnits::pct);
+        rB.spin(vex::directionType::fwd, velocR*((val - DegreeAmount)/(initial - DegreeAmount)), vex::percentUnits::pct);
+
+        Controller.Screen.clearScreen();
+        Controller.Screen.print(DegreeAmount);
+        Controller.Screen.print(Gyro.value(rotationUnits::deg));
+        
+        this_thread::sleep_for(10);
+      }
+    }
+    //Stop motors after reached degree turn
+    stopAll();
+    
+    Controller.Screen.clearScreen();
+    Controller.Screen.print("Gyro Turn Finished");
+}
 
 void resetGyro() {
   Controller.Screen.clearScreen();

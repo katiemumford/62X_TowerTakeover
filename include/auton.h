@@ -26,6 +26,7 @@ void noAuton() {
   deployTray();
 }
 
+//RedAuto, picks up 4 cubes
 void RedAuto(){
   setBraking();
   resetGyro();
@@ -65,42 +66,39 @@ void RedAuto2() {
   spinIntake(100);
 
   //Drive forward to pick up 3 cubes
-  basicEncoderDrive(30,3,true);
+  basicEncoderDrive(40,3.5,true);
   
   //Drive most of the way back to the wall
-  basicEncoderDrive(30,-2.5,true);
+  basicEncoderDrive(80,-3.2,true);
 
   //Turn towards the corner
-  gyroTurn2(90,25,25);
-
-  //Drive forward
-  basicEncoderDrive(30, .9,true);
+  gyroTurn3(90,40,40);
 
   //Swerve drive into the next group of 4
-  gyroTurn2(10,-5,25);
-
+  gyroTurn2(15,-30,60);
+ 
   //Pick up 4 cubes
-  basicEncoderDrive(30,3,true);
+  basicEncoderDrive(35,2.5,true);
 
   //Drive back to the corner
-  basicEncoderDrive(30,-3.5,true);
+  basicEncoderDrive(80,-3.5,true);
 
   //Stop intaking
   spinIntake(0);
 
   //Turn towards the corner
-  gyroTurn2(95,25,25);
+  gyroTurn3(100,60,60);
 
   //Drive up to the corner
-  basicEncoderDrive(30,.6,true);
+  basicEncoderDrive(50,1.2,true);
 
   //Place our cubes
-  moveTray(-90);
-  wait(3000);
+  moveTray(-100);
+  wait(2250);
   moveTray(0);
 
   //Back away from our cubes
-  basicEncoderDrive(35,-1,true, 2);
+  basicEncoderDrive(50,-1,true);
 }
 
 void blueAuto(){
@@ -142,6 +140,27 @@ void blueAuto(){
 
   basicEncoderDrive(35,-1,true, 2);
 
+}
+
+void AutoChoice(){
+    if(!Controller.ButtonA.pressing())
+      RedAuto2();
+    else
+      RedAuto();
+}
+
+void test(){
+  setBraking();
+  resetGyro();
+
+  gyroTurn3(90,40,40);
+    wait(1000);
+
+  gyroTurn3(0,40,40);
+    wait(1000);
+
+  gyroTurn3(90,40,40);
+  gyroTurn3(0,40,40);
 }
 
 void red1() {
@@ -249,8 +268,3 @@ void blue2() {
   basicEncoderDrive(40, -distance2d, true);
   */
 }
-
-void test() {
-  outtakeSome();
-}
-
