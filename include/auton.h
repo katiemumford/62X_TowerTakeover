@@ -104,14 +104,14 @@ void RedAuto2() {
   basicEncoderDrive(35,3.8,true);
 
   //Drive back to the corner
-  basicEncoderDrive(80,-3.55,true);
+  basicEncoderDrive(80,-3.35,true);
 
   spinIntake(-10);
   moveTray(-80);
 
   //Stop intaking
   //Turn towards the corner
-  gyroTurn3(107,50,50,5);
+  gyroTurn3(112,50,50,5);
 
   //Drive up to the corner
   basicEncoderDrive(30,.8,true);
