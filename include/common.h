@@ -24,7 +24,7 @@ int restPotVal = 2780;
 bool trayLimitHit = false;
 
 bool intaking = false;  //for armControl to know whether to apply downword force or just brake
-
+bool current = false, prev = false;
 //values and bools for armControl
 bool armMoving = false; 
 double trayForwardArmUp = 1.5;      //amount of rev tray moves forward for arms
@@ -54,10 +54,10 @@ void vdrive(double l, double r) { //voltage drive
   l *= 12.0/100;
   r *= 12.0/100; //converts to volts
 
-  lF.spin(vex::directionType::fwd, l, vex::voltageUnits::volt);
-  lB.spin(vex::directionType::fwd, l, vex::voltageUnits::volt);
-  rF.spin(vex::directionType::fwd, r, vex::voltageUnits::volt);
-  rB.spin(vex::directionType::fwd, r, vex::voltageUnits::volt);
+  lF.spin(vex::directionType::fwd, l*abs(l), vex::voltageUnits::volt);
+  lB.spin(vex::directionType::fwd, l*abs(l), vex::voltageUnits::volt);
+  rF.spin(vex::directionType::fwd, r*abs(r), vex::voltageUnits::volt);
+  rB.spin(vex::directionType::fwd, r*abs(r), vex::voltageUnits::volt);
 }
 
 void spinIntake(int pct) {
@@ -73,7 +73,6 @@ void spinIntake(int pct) {
 void moveArm(int pct) {
   if (pct != 0) {
     arm.spin(vex::directionType::fwd, pct, vex::velocityUnits::pct);
-    Controller.Screen.print("bruh");
   } else {
     arm.stop(vex::brakeType::brake);
   }
@@ -107,33 +106,29 @@ void intakeControl() {
 //if R2 pressed, intake outakes at -100 until unpressed
 //if R1 and (shiftKey) L2 pressed, intake intakes at 50 until unpressed
 //if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
+  if(Controller.ButtonR1.pressing()){
+    if(current == prev){
+      current = !current;
+    }
+  } else {
+    prev = current;
+  }
 
-if (Controller.ButtonL2.pressing() && Controller.ButtonR1.pressing()){ //DO THESE WORK??? LOL WUT
-  spinIntake(40);
-  intaking = true;
-} else if (Controller.ButtonL2.pressing()&& Controller.ButtonL2.pressing()){
-  spinIntake(-40);
-  intaking = true;
-}
-else if (Controller.ButtonR1.pressing()){
-  spinIntake(100);
-  intaking = true;
-}
-else if(Controller.ButtonR2.pressing()){
-  spinIntake(-100);
-  intaking = true;
-}
-else{
-  spinIntake(0);
-  intaking = false;
-}
+  if(Controller.ButtonR2.pressing()){
+    spinIntake(-100);
+    current = false;
+  }
+  else if(current){
+    spinIntake(100);
+  } 
+  else {
+    spinIntake(0);
+  }
 }
 
 /////////////////ARM CONTROL///////////////////////////////////////////////////////////////////////////////////////
 
-
 void armControl() {   //big function for controlling arms
-
  if (Controller.ButtonX.pressing()){   //if X is continously pressed
   moveArm(80);
   if (tray.rotation(rev) > -1){
@@ -216,7 +211,6 @@ if (intaking && !armMoving && arm.value()<50){                      //apply down
   arm.stop(vex::brakeType::brake);                                //brake any other time
 }
 
-
 Controller.ButtonX.pressed(armUpLowTower); //when X is pressed once, move arm to mid twr
 Controller.ButtonY.pressed(armUpMidTower); //when Y is pressed once, move arm to low tower
 Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return tray to lower
@@ -226,9 +220,6 @@ Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return t
    }
  }
 **/
-
-
-
 
 
 /////////////////TRAY CONTROL///////////////////////////////////////////////////////////////////////////////////////
@@ -282,12 +273,13 @@ void wait(int millis) {
   vex::task::sleep(millis);
 }
 
-void deployTray() {
+int deployTray() {
   moveArm(100);
-  wait(800);
+  vex::this_thread::sleep_for(400);
   moveArm(-70);
-  wait(800);
+  vex::this_thread::sleep_for(400);
   moveArm(0);
+  return(0);
 }
 
 void outtakeSome() {
@@ -417,7 +409,7 @@ void gyroTurn2 (double DegreeAmount, int velocL, int velocR)
 
 //DegreeAmount (0 - 360) degrees robot will turn
 //veloc (0 - 100) percent of motor power given
-void gyroTurn3 (double DegreeAmount, int velocL, int velocR)
+void gyroTurn3 (double DegreeAmount, int velocL, int velocR, int min)
 {
 
     //Prints the DegreeAmount for debugging puroses to ensure that it is going for the right degree amount
@@ -441,11 +433,11 @@ void gyroTurn3 (double DegreeAmount, int velocL, int velocR)
         rB.spin(directionType::rev);
         */
         double val = Gyro.value(rotationUnits::deg);
-
-        lF.spin(vex::directionType::fwd, velocL*((DegreeAmount - val)/(DegreeAmount)), vex::percentUnits::pct);
-        lB.spin(vex::directionType::fwd, velocL*((DegreeAmount - val)/(DegreeAmount)), vex::percentUnits::pct);
-        rF.spin(vex::directionType::rev, velocR*((DegreeAmount - val)/(DegreeAmount)), vex::percentUnits::pct);
-        rB.spin(vex::directionType::rev, velocR*((DegreeAmount - val)/(DegreeAmount)), vex::percentUnits::pct);
+        
+        lF.spin(vex::directionType::fwd, fmax(velocL*((DegreeAmount - val)/(DegreeAmount)),min), vex::percentUnits::pct);
+        lB.spin(vex::directionType::fwd, fmax(velocL*((DegreeAmount - val)/(DegreeAmount)),min), vex::percentUnits::pct);
+        rF.spin(vex::directionType::rev, fmax(velocR*((DegreeAmount - val)/(DegreeAmount)),min), vex::percentUnits::pct);
+        rB.spin(vex::directionType::rev, fmax(velocR*((DegreeAmount - val)/(DegreeAmount)),min), vex::percentUnits::pct);
         
         Controller.Screen.clearScreen();
         Controller.Screen.print(DegreeAmount);
@@ -459,10 +451,10 @@ void gyroTurn3 (double DegreeAmount, int velocL, int velocR)
       {
         double val = Gyro.value(rotationUnits::deg);
 
-        lF.spin(vex::directionType::rev, velocL*((val - DegreeAmount)/(initial - DegreeAmount)), vex::percentUnits::pct);
-        lB.spin(vex::directionType::rev, velocL*((val - DegreeAmount)/(initial - DegreeAmount)), vex::percentUnits::pct);
-        rF.spin(vex::directionType::fwd, velocR*((val - DegreeAmount)/(initial - DegreeAmount)), vex::percentUnits::pct);
-        rB.spin(vex::directionType::fwd, velocR*((val - DegreeAmount)/(initial - DegreeAmount)), vex::percentUnits::pct);
+        lF.spin(vex::directionType::rev, fmax(velocL*((val - DegreeAmount)/(initial - DegreeAmount)),min), vex::percentUnits::pct);
+        lB.spin(vex::directionType::rev, fmax(velocL*((val - DegreeAmount)/(initial - DegreeAmount)),min), vex::percentUnits::pct);
+        rF.spin(vex::directionType::fwd, fmax(velocR*((val - DegreeAmount)/(initial - DegreeAmount)),min), vex::percentUnits::pct);
+        rB.spin(vex::directionType::fwd, fmax(velocR*((val - DegreeAmount)/(initial - DegreeAmount)),min), vex::percentUnits::pct);
 
         Controller.Screen.clearScreen();
         Controller.Screen.print(DegreeAmount);
@@ -478,19 +470,17 @@ void gyroTurn3 (double DegreeAmount, int velocL, int velocR)
     Controller.Screen.print("Gyro Turn Finished");
 }
 
-void resetGyro() {
+int resetGyro() {
   Controller.Screen.clearScreen();
   Controller.Screen.print("Calibrating Gyro...");
   Gyro.startCalibration();
-    while(Gyro.isCalibrating());
+  while(Gyro.isCalibrating()){
+    vex::this_thread::sleep_for(10);
+  }
+  Controller.Screen.clearScreen();
   Controller.Screen.print("Done!");
+  return(0);
 }
-
-
-//ONE SQUARE = 1.79 rev
-//RIGHT TURN ~ 1.0rev
-
-
 
 //drive for a given distance, uses built-in encoder function
 //program will wait for the drive to finish if wait == true
@@ -515,6 +505,17 @@ void basicEncoderDrive(double pct, double rev, bool wait) {
   if (wait) {
       rB.rotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
     return;
+  }
+  rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+}
+
+void turnDrive(double pct, double rev, bool wait) {
+  rF.startRotateFor(rev - .3, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  lB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  lF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  if (wait) {
+      rB.startRotateFor(rev - .3, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+      return;
   }
   rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
 }

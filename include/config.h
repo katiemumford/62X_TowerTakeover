@@ -17,7 +17,7 @@ vex::controller Controller;
 
 //drive motors
 
-vex::motor rF (vex::PORT10, true); 
+vex::motor rF (vex::PORT19, true); 
 vex::motor rB (vex::PORT9, true);
 vex::motor lF (vex::PORT8, false);
 vex::motor lB (vex::PORT7, false); 

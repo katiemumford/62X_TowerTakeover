@@ -17,11 +17,11 @@ bool preAutonBool;
 //array of auton programs
 std::vector<Auton> autons = { 
   {noAuton, "No Auton"}, 
-  {red1, "Red 1"},
-  {red2, "Red 2"}, 
+  //{red1, "Red 1"},
+  //{red2, "Red 2"}, 
   {blue1, "Blue 1"},
   {blue2, "Blue 2"},
-  {test, "test"}
+  //{test, "test"}
 };
 
 //*draws the buttons on the Brain screen representing autons
@@ -132,6 +132,5 @@ int main() {
     pre_auton();                        
     while(1) {
       vex::task::sleep(100);
-
     }        
 }
