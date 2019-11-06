@@ -68,13 +68,16 @@ void RedAuto2() {
   resetGyro();
   vex::thread t(deployTray);
 
+  spinIntake(100);
+
   //Start intaking
   basicEncoderDrive(40,.8,true);
-  spinIntake(100);
 
   t.join();
 
   moveArm(-30);
+
+  wait(200);
 
   basicEncoderDrive(40,2.3,true);
 
@@ -86,18 +89,19 @@ void RedAuto2() {
   //gyroTurn3(-11,35,35,15);
 
 
-  turnDrive(99, -3.05, true);
+  turnDrive(99, -2.85, true);
   //Turn towards the corner
 
-
+  /**
   basicEncoderDrive(50,1.5,true);
 
   basicEncoderDrive(40,1.2,true);
 
   basicEncoderDrive(40,1.1,true);
+  */
 
   //Pick up 4 cubes
-  //basicEncoderDrive(30,3.8,true);
+  basicEncoderDrive(35,3.8,true);
 
   //Drive back to the corner
   basicEncoderDrive(80,-3.55,true);
