@@ -111,13 +111,15 @@ void RedAuto2() {
 
   //Stop intaking
   //Turn towards the corner
-  gyroTurn3(100,50,50,5);
+  gyroTurn3(107,50,50,5);
 
   //Drive up to the corner
   basicEncoderDrive(30,.8,true);
 
   //Place our cubes
   wait(400);
+
+  spinIntake(-50);
 
   //Back away from our cubes
   basicEncoderDrive(50,-1,true);
