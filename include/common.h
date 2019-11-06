@@ -510,14 +510,14 @@ void basicEncoderDrive(double pct, double rev, bool wait) {
 }
 
 void turnDrive(double pct, double rev, bool wait) {
-  rF.startRotateFor(rev - .3, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  rF.startRotateFor(rev - .4, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
   lB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
   lF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
   if (wait) {
-      rB.rotateFor(rev - .3, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+      rB.rotateFor(rev - .4, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
       return;
   }
-  rB.startRotateFor(rev - .3, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  rB.startRotateFor(rev - .4, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
 }
 
 //turn in place for a given distance per wheel, uses built-in encoder function

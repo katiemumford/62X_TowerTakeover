@@ -86,7 +86,7 @@ void RedAuto2() {
   //gyroTurn3(-11,35,35,15);
 
 
-  turnDrive(99, -3.15, true);
+  turnDrive(99, -3.05, true);
   //Turn towards the corner
 
 
