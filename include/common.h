@@ -54,10 +54,10 @@ void vdrive(double l, double r) { //voltage drive
   l *= 12.0/100;
   r *= 12.0/100; //converts to volts
 
-  lF.spin(vex::directionType::fwd, l*abs(l), vex::voltageUnits::volt);
-  lB.spin(vex::directionType::fwd, l*abs(l), vex::voltageUnits::volt);
-  rF.spin(vex::directionType::fwd, r*abs(r), vex::voltageUnits::volt);
-  rB.spin(vex::directionType::fwd, r*abs(r), vex::voltageUnits::volt);
+  lF.spin(vex::directionType::fwd, l, vex::voltageUnits::volt);
+  lB.spin(vex::directionType::fwd, l, vex::voltageUnits::volt);
+  rF.spin(vex::directionType::fwd, r, vex::voltageUnits::volt);
+  rB.spin(vex::directionType::fwd, r, vex::voltageUnits::volt);
 }
 
 void spinIntake(int pct) {
@@ -100,35 +100,32 @@ void moveTray(int pct) {
 #pragma region
 
 /////////////////INTAKE////////////////////////////////////////////////////////////////////////////////////////////
-void intakeControl() {
-
-//if R1 is pressed, intake intakes at 100 until unpressed
-//if R2 pressed, intake outakes at -100 until unpressed
-//if R1 and (shiftKey) L2 pressed, intake intakes at 50 until unpressed
-//if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
-  if(Controller.ButtonR1.pressing()){
-    if(current == prev){
-      current = !current;
+void intakeControl(bool running) {
+  //if R1 is pressed, intake intakes at 100 until unpressed
+  //if R2 pressed, intake outakes at -100 until unpressed
+  //if R1 and (shiftKey) L2 pressed, intake intakes at 50 until unpressed
+  //if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
+  if(!running){
+    if(Controller.ButtonR1.pressing() && Controller.ButtonR2.pressing()){
+      spinIntake(0);
     }
-  } else {
-    prev = current;
-  }
-
-  if(Controller.ButtonR2.pressing()){
-    spinIntake(-100);
-    current = false;
-  }
-  else if(current){
-    spinIntake(100);
-  } 
-  else {
-    spinIntake(0);
+    else if(Controller.ButtonR1.pressing()){
+      spinIntake(100);
+      moveArm(-1);
+    } 
+    else if(Controller.ButtonR2.pressing()){
+      spinIntake(-100);
+    }
+    else {
+      spinIntake(0);
+    }
   }
 }
 
 /////////////////ARM CONTROL///////////////////////////////////////////////////////////////////////////////////////
 
 void armControl() {   //big function for controlling arms
+/**
  if (Controller.ButtonX.pressing()){   //if X is continously pressed
   moveArm(80);
   if (tray.rotation(rev) > -1){
@@ -141,6 +138,11 @@ void armControl() {   //big function for controlling arms
    Controller.Screen.print("i should be going down");
  } else {
    moveArm(0);
+ }
+ */
+
+ if(Controller.ButtonA.pressing()){
+
  }
 }
 
@@ -246,14 +248,29 @@ void moveBackAutomatically(){
   **/
 }
 
-void trayControl() {
+void trayControl(bool running) {
   //if limit switch hit, reset encoder to zero
   if (trayLimit.value() == 1){
     tray.resetRotation();
   }
-  Controller.ButtonL2.pressed(moveBackAutomatically);
+  if(!running){
+    Controller.ButtonL2.pressed(moveBackAutomatically);
 
-  if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
+    if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
+      moveTray(90);                           
+    } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
+    if (tray.rotation(rev) > -5){
+      moveTray(-80);
+    } else {
+      moveTray(-30);
+    }
+    } else if (trayMovingBackAutomat == false){
+    moveTray(0);
+    }
+    
+    Controller.ButtonL2.pressed(moveBackAutomatically);
+    
+    if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
     moveTray(90);                           
   } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
     if (tray.rotation(rev) > -5){
@@ -264,6 +281,9 @@ void trayControl() {
   } else if (trayMovingBackAutomat == false){
     moveTray(0);
   }
+  }
+
+  
 }
 #pragma endregion
 
@@ -518,6 +538,17 @@ void turnDrive(double pct, double rev, bool wait) {
       return;
   }
   rB.startRotateFor(rev - .55, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+}
+
+void turnDriveBlue(double pct, double rev, bool wait) {
+  lF.startRotateFor(rev - .55, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  rF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  if (wait) {
+      lB.rotateFor(rev - .55, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+      return;
+  }
+  lB.startRotateFor(rev - .55, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
 }
 
 //turn in place for a given distance per wheel, uses built-in encoder function

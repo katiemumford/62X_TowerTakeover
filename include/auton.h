@@ -129,54 +129,79 @@ void RedAuto2() {
   spinIntake(-10);
 
 }
-/*
+
 void BlueAuto2() {
 
   //Reset gyros and set motors to break
   setBraking();
+  /**
   vex::thread t(deployTray);
   resetGyro();
   t.join();
+  */
+  resetGyro();
+  vex::thread t(deployTray);
 
-  //Start intaking
   spinIntake(100);
 
+  //Start intaking
+  basicEncoderDrive(40,.8,true);
+
+  t.join();
+
+  moveArm(-30);
+
+  wait(200);
+
+  basicEncoderDrive(40,2.3,true);
+
   //Drive forward to pick up 3 cubes
-  basicEncoderDrive(30,3,true);
+  //basicEncoderDrive(40,3.2,true);
 
-  gyroTurn3(18,15,15);
-  
-  //Drive most of the way back to the wall
-  basicEncoderDrive(70,-3.4,true);
+  gyroTurn3(35,15,15, 10);
+  //basicEncoderDrive(99,-3.15,true);
+  //gyroTurn3(-11,35,35,15);
 
+
+  turnDriveBlue(99, -2.85, true);
   //Turn towards the corner
-  gyroTurn3(10,25,25);
- 
+
+  /**
+  basicEncoderDrive(50,1.5,true);
+
+  basicEncoderDrive(40,1.2,true);
+
+  basicEncoderDrive(40,1.1,true);
+  */
+
   //Pick up 4 cubes
-  basicEncoderDrive(25,3.5,true);
+  basicEncoderDrive(35,3.8,true);
 
   //Drive back to the corner
-  basicEncoderDrive(80,-3.5,true);
+  basicEncoderDrive(80,-3.35,true);
 
-  moveTray(-70);
+  spinIntake(-10);
+  moveTray(-80);
 
   //Stop intaking
   //Turn towards the corner
-  gyroTurn3(-100,60,60);
-    
-  spinIntake(0);
+  gyroTurn3(-112,50,50,5);
 
   //Drive up to the corner
-  basicEncoderDrive(30,.5,true);
+  basicEncoderDrive(30,.8,true);
 
   //Place our cubes
-  wait(1500);
-  moveTray(0);
+  wait(400);
+
+  spinIntake(-50);
 
   //Back away from our cubes
   basicEncoderDrive(50,-1,true);
-}
+  moveTray(0);
 
+  spinIntake(-10);
+}
+/*
 void RedAuto3() {
 
   //Reset gyros and set motors to break

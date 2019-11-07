@@ -5,6 +5,8 @@
 #include <vector>
 using namespace vex;
 
+bool running = false;
+
 //custom variable-type to define an autonomous program
 struct Auton {  
   void(*ref)(); //function reference
@@ -16,11 +18,11 @@ bool preAutonBool;
 
 //array of auton programs
 std::vector<Auton> autons = { 
-  {noAuton, "No Auton"}, 
-  //{red1, "Red 1"},
-  //{red2, "Red 2"}, 
-  {blue1, "Blue 1"},
-  {blue2, "Blue 2"},
+  {noAuton, "No Auton"},
+  {RedAuto2, "Red 6-7"},
+  {BlueAuto2, "Blue 6-7"}
+  //{blue1, "Blue 1"},
+  //{blue2, "Blue 2"},
   //{test, "test"}
 };
 
@@ -83,39 +85,49 @@ void pre_auton( void ) {
 bool isBraking = false;
 
 
-void armBrakeToggle(){
+void armController(){
   while (true){
-  if (Controller.ButtonA.pressing()){
-      
-    isBraking = !isBraking;
-    while(Controller.ButtonA.pressing()){
+      if (Controller.ButtonA.pressing()){
+        running = true;
+      }
+      uint32_t t1 = timer::system();
+      uint32_t t2 = timer::system();
+      while(running == true){
+        t2 = timer::system();
+        if(t2 - t1 < 500){
+          moveArm(100);
+          moveTray(-80);
+        } else if(t2 - t1 < 2000) {
+          moveArm(100);
+          moveTray(0);
+        } else if(t2 - t1 < 2500) {
+          spinIntake(-100);
+        } else if(t2 - t1 < 3000) {
+          spinIntake(0);
+          moveArm(-80);
+          moveTray(30);
+        } else if(t2 - t1 < 3500) {
+          spinIntake(0);
+          moveTray(80);
+        } else {
+          running = false;
+        }
+      }
       vex::task::sleep(10); 
     }
-
-    if(isBraking){
-      arm.setBrake(hold);
-      Controller.Screen.print("set hold");
-    } else {
-      arm.setBrake(coast);
-      Controller.Screen.print("set coast");
-    }
-  }
-  vex::task::sleep(10); 
-  }
 }
+
 void usercontrol (void) { 
   preAutonBool = false;
   vex::task::stop(pre_autonTask);
   Brain.Screen.clearScreen(vex::color::black); //stops pre auton and clears screen
 
-  vex::thread buttonAToggleTask(armBrakeToggle);
-
+  vex::thread buttonAToggleTask(armController);
 
   while (1) {
     vdrive(Controller.Axis3.value()*100/127.0, Controller.Axis2.value()*100/127.0);
-    intakeControl();
-    armControl();
-    trayControl();
+    intakeControl(running);
+    trayControl(running);
   
     vex::task::sleep(20); 
   }
