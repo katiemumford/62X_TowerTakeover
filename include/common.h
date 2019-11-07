@@ -265,7 +265,7 @@ void trayControl(bool running) {
     if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
       moveTray(90);                           
     } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
-    if (tray.rotation(rev) > -5){
+    if (tray.rotation(rev) > -4){
       moveTray(-80);
     } else {
       moveTray(-30);
