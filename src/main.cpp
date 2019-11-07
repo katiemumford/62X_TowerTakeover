@@ -97,16 +97,15 @@ void armController(){
         if(t2 - t1 < 500){
           moveArm(100);
           moveTray(-80);
-        } else if(t2 - t1 < 2000) {
+        } else if(t2 - t1 < 1000) {
           moveArm(100);
           moveTray(0);
-        } else if(t2 - t1 < 2500) {
+        } else if(t2 - t1 < 1500) {
           spinIntake(-100);
-        } else if(t2 - t1 < 3000) {
+        } else if(t2 - t1 < 2000) {
           spinIntake(0);
           moveArm(-80);
-          moveTray(30);
-        } else if(t2 - t1 < 3500) {
+        } else if(t2 - t1 < 2500) {
           spinIntake(0);
           moveTray(80);
         } else {
@@ -123,10 +122,12 @@ void usercontrol (void) {
   Brain.Screen.clearScreen(vex::color::black); //stops pre auton and clears screen
 
   vex::thread buttonAToggleTask(armController);
+  int32_t lValue = lin.position(vex::rotationUnits::deg);
+  int32_t rValue = rin.position(vex::rotationUnits::deg);
 
   while (1) {
     vdrive(Controller.Axis3.value()*100/127.0, Controller.Axis2.value()*100/127.0);
-    intakeControl(running);
+    intakeControl(running, rValue, lValue);
     trayControl(running);
   
     vex::task::sleep(20); 

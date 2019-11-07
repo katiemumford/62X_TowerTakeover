@@ -6,7 +6,6 @@
 #include <vector>
 #include <time.h>
 
-
 using namespace vex;
 
 //ALL BASIC AND DRIVER FUNCTIONS FOUND HERE
@@ -100,21 +99,30 @@ void moveTray(int pct) {
 #pragma region
 
 /////////////////INTAKE////////////////////////////////////////////////////////////////////////////////////////////
-void intakeControl(bool running) {
+void intakeControl(bool running, int32_t rValue, int32_t lValue) {
   //if R1 is pressed, intake intakes at 100 until unpressed
   //if R2 pressed, intake outakes at -100 until unpressed
   //if R1 and (shiftKey) L2 pressed, intake intakes at 50 until unpressed
   //if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
   if(!running){
+    if(rin.position(vex::rotationUnits::deg) > rValue) {
+      rin.spin(directionType::rev, 20, vex::percentUnits::pct);
+    }
+    if(lin.position(vex::rotationUnits::deg) > lValue) {
+      lin.spin(directionType::rev, 20, vex::percentUnits::pct);
+    }
+    
     if(Controller.ButtonR1.pressing() && Controller.ButtonR2.pressing()){
       spinIntake(0);
     }
     else if(Controller.ButtonR1.pressing()){
       spinIntake(100);
-      moveArm(-1);
     } 
     else if(Controller.ButtonR2.pressing()){
       spinIntake(-100);
+    } 
+    else if(Controller.ButtonY.pressing()){
+      spinIntake(-15);
     }
     else {
       spinIntake(0);
