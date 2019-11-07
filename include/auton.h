@@ -58,75 +58,64 @@ void RedAuto(){
 //RedAuto2, attempts to pick up 8 cubes rather than 4
 void RedAuto2() {
 
-  //Reset gyros and set motors to break
-  setBraking();
+  setBraking(); //Set motors to break
+  
   /**
   vex::thread t(deployTray);
   resetGyro();
   t.join();
   */
-  resetGyro();
-  vex::thread t(deployTray);
 
-  spinIntake(100);
+  resetGyro(); //Calibrate the Gyroscope
+  
+  vex::thread t(deployTray); //Start deploy thread
 
-  //Start intaking
+  spinIntake(100); //Start intaking and drive forward as deploy is happening
   basicEncoderDrive(40,.8,true);
 
-  t.join();
+  t.join(); //Wait for deploy thread to finish
 
-  moveArm(-30);
+  moveArm(-30); //Set arm to downward power
 
-  wait(200);
+  wait(200); //Wait for 200ms for arm to fall
 
-  basicEncoderDrive(40,2.3,true);
+  basicEncoderDrive(40,2.3,true); //Drive forward to pick up the 3 cubes
 
-  //Drive forward to pick up 3 cubes
-  //basicEncoderDrive(40,3.2,true);
+  //basicEncoderDrive(40,3.2,true); //Drive forward to pick up 3 cubes
 
-  gyroTurn3(-35,15,15, 10);
+  gyroTurn3(-35,15,15, 10); // Turn towards the center, back towards the wall
+
   //basicEncoderDrive(99,-3.15,true);
   //gyroTurn3(-11,35,35,15);
 
-
-  turnDrive(99, -2.85, true);
-  //Turn towards the corner
+  turnDrive(99, -2.85, true); //Drive backwards, swerve at the end to face stack of 4
 
   /**
   basicEncoderDrive(50,1.5,true);
-
   basicEncoderDrive(40,1.2,true);
-
   basicEncoderDrive(40,1.1,true);
   */
 
-  //Pick up 4 cubes
-  basicEncoderDrive(35,3.8,true);
+  basicEncoderDrive(35,3.8,true);  //Pick up 4 cubes
 
-  //Drive back to the corner
-  basicEncoderDrive(80,-3.35,true);
+  basicEncoderDrive(80,-3.35,true); //Drive back to the corner
 
-  spinIntake(-10);
-  moveTray(-80);
+  spinIntake(-10); //Apply slight outwards motion
+  moveTray(-80); //start placing the cubes
 
-  //Stop intaking
-  //Turn towards the corner
-  gyroTurn3(112,50,50,5);
+  gyroTurn3(112,50,50,5); //Turn towards the cube
+  
+  basicEncoderDrive(30,.8,true); //Drive up to the corner
 
-  //Drive up to the corner
-  basicEncoderDrive(30,.8,true);
+  wait(400); //Place our cubes
 
-  //Place our cubes
-  wait(400);
+  spinIntake(-50); //Outake more
 
-  spinIntake(-50);
+  basicEncoderDrive(50,-1,true); //Back away from our cubes
+  
+  moveTray(0); //Stop moving the tray
 
-  //Back away from our cubes
-  basicEncoderDrive(50,-1,true);
-  moveTray(0);
-
-
-  spinIntake(-10);
+  spinIntake(-10); //Outtake cubes
 
 }
 

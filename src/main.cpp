@@ -94,18 +94,19 @@ void armController(){
       uint32_t t2 = timer::system();
       while(running == true){
         t2 = timer::system();
-        if(t2 - t1 < 500){
+        uint32_t t3 = t2 - t1;
+        if(t3 < 500){
           moveArm(100);
           moveTray(-80);
-        } else if(t2 - t1 < 1000) {
+        } else if(t3 < 1000) {
           moveArm(100);
           moveTray(0);
-        } else if(t2 - t1 < 1500) {
+        } else if(t3 < 1500) {
           spinIntake(-100);
-        } else if(t2 - t1 < 2000) {
+        } else if(t3 < 2000) {
           spinIntake(0);
           moveArm(-80);
-        } else if(t2 - t1 < 2500) {
+        } else if(t3 < 2500) {
           spinIntake(0);
           moveTray(80);
         } else {
