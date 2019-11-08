@@ -59,7 +59,7 @@ void RedAuto(){
 void RedAuto2() {
 
   setBraking(); //Set motors to break
-  
+
   /**
   vex::thread t(deployTray);
   resetGyro();
@@ -116,7 +116,6 @@ void RedAuto2() {
   moveTray(0); //Stop moving the tray
 
   spinIntake(-10); //Outtake cubes
-
 }
 
 void BlueAuto2() {
