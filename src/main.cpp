@@ -83,7 +83,7 @@ void pre_auton( void ) {
 }
 
 bool isBraking = false;
-
+bool running2 = false, running3 = false;
 
 void armController(){
   while (true){
@@ -101,21 +101,44 @@ void armController(){
         } else if(t3 < 1000) {
           moveArm(100);
           moveTray(0);
-        } else if(t3 < 1500) {
-          spinIntake(-100);
-        } else if(t3 < 2000) {
-          spinIntake(0);
-          moveArm(-80);
-        } else if(t3 < 2500) {
-          spinIntake(0);
-          moveTray(80);
         } else {
-          running = false;
+            uint32_t t4 = timer::system();
+            uint32_t t5 = timer::system();
+            if(Controller.ButtonA.pressing()){
+              running2 = true;
+            }
+            while(running2){
+              t5 = timer::system();
+              if(t5-t4 < 500){
+                spinIntake(-75);
+              } else {
+                 uint32_t t6 = timer::system();
+                 uint32_t t7 = timer::system();
+                 if(Controller.ButtonA.pressing()){
+                  running3 = true;
+                 } 
+                 while(running3){
+                  uint32_t t7 = timer::system();
+                  if(t7-t6 < 1000) {
+                    spinIntake(0);
+                    moveArm(-80);
+                  } else if(t7-t6 < 1500) {
+                    spinIntake(0);
+                    moveTray(80);
+                 } else {
+                   running3 = false;
+                   running2 = false;
+                   running = false;
+                 }
+              }
+            }
+          } 
         }
       }
       vex::task::sleep(10); 
-    }
+  }
 }
+
 
 void usercontrol (void) { 
   preAutonBool = false;
@@ -129,7 +152,7 @@ void usercontrol (void) {
   while (1) {
     vdrive(Controller.Axis3.value()*100/127.0, Controller.Axis2.value()*100/127.0);
     intakeControl(running, rValue, lValue);
-    trayControl(running);
+    trayControl();
   
     vex::task::sleep(20); 
   }
@@ -141,7 +164,7 @@ void theAuton(void) {
 }
 
 int main() {
-    Competition.autonomous(RedAuto2);
+    Competition.autonomous(BlueAutoTall);
     Competition.drivercontrol(usercontrol);
     pre_auton();                        
     while(1) {

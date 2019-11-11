@@ -254,43 +254,29 @@ void moveBackAutomatically(){
   **/
 }
 
-void trayControl(bool running) {
+void trayControl() {
   //if limit switch hit, reset encoder to zero
   if (trayLimit.value() == 1){
     tray.resetRotation();
   }
-  if(!running){
-    Controller.ButtonL2.pressed(moveBackAutomatically);
-
-    if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
-      moveTray(90);                           
-    } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
-    if (tray.rotation(rev) > -4){
-      moveTray(-80);
-    } else {
-      moveTray(-30);
-    }
-    } else if (trayMovingBackAutomat == false){
-    moveTray(0);
-    }
-    
-    Controller.ButtonL2.pressed(moveBackAutomatically);
-    
-    if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
+  Controller.ButtonL2.pressed(moveBackAutomatically);
+  if (!armMoving){
+  if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
     moveTray(90);                           
   } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
-    if (tray.rotation(rev) > -5){
-      moveTray(-80);
+    if (tray.rotation(rev) > -4){
+      moveTray(-60);
     } else {
       moveTray(-30);
     }
-  } else if (trayMovingBackAutomat == false){
+  } else if (trayMovingBackAutomat == false ){
     moveTray(0);
   }
   }
+}
 
   
-}
+
 #pragma endregion
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -547,14 +533,14 @@ void turnDrive(double pct, double rev, bool wait) {
 }
 
 void turnDriveBlue(double pct, double rev, bool wait) {
-  lF.startRotateFor(rev - .55, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  lF.startRotateFor(rev - .65, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
   rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
   rF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
   if (wait) {
-      lB.rotateFor(rev - .55, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+      lB.rotateFor(rev - .65, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
       return;
   }
-  lB.startRotateFor(rev - .55, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  lB.startRotateFor(rev - .65, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
 }
 
 //turn in place for a given distance per wheel, uses built-in encoder function
