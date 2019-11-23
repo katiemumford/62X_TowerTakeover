@@ -39,7 +39,3 @@ vex::gyro Gyro = vex::gyro(Brain.ThreeWirePort.H);
 //vex::gyro gyr (Brain.ThreeWirePort.B);
 //vex::accelerometer acc (Brain.ThreeWirePort.C);
 
-
-
-
-

@@ -5,8 +5,6 @@
 #include <vector>
 using namespace vex;
 
-bool running = false;
-
 //custom variable-type to define an autonomous program
 struct Auton {  
   void(*ref)(); //function reference
@@ -83,21 +81,23 @@ void pre_auton( void ) {
 }
 
 bool isBraking = false;
-bool running2 = false, running3 = false;
 
+bool running4 = false;
 void armController(){
+  bool running5 = false, running6 = false;
+
   while (true){
       if (Controller.ButtonA.pressing()){
-        running = true;
+        running4 = true;
       }
       uint32_t t1 = timer::system();
       uint32_t t2 = timer::system();
-      while(running == true){
+      while(running4 == true){
         t2 = timer::system();
         uint32_t t3 = t2 - t1;
-        if(t3 < 500){
+        if(t3 < 750){
           moveArm(100);
-          moveTray(-80);
+          moveTray(-95);
         } else if(t3 < 1000) {
           moveArm(100);
           moveTray(0);
@@ -105,9 +105,9 @@ void armController(){
             uint32_t t4 = timer::system();
             uint32_t t5 = timer::system();
             if(Controller.ButtonA.pressing()){
-              running2 = true;
+              running5 = true;
             }
-            while(running2){
+            while(running5){
               t5 = timer::system();
               if(t5-t4 < 500){
                 spinIntake(-75);
@@ -115,20 +115,20 @@ void armController(){
                  uint32_t t6 = timer::system();
                  uint32_t t7 = timer::system();
                  if(Controller.ButtonA.pressing()){
-                  running3 = true;
+                  running6 = true;
                  } 
-                 while(running3){
+                 while(running6){
                   uint32_t t7 = timer::system();
-                  if(t7-t6 < 1000) {
+                  if(t7-t6 < 1250) {
                     spinIntake(0);
                     moveArm(-80);
-                  } else if(t7-t6 < 1500) {
+                  } else if(t7-t6 < 1750) {
                     spinIntake(0);
                     moveTray(80);
                  } else {
-                   running3 = false;
-                   running2 = false;
-                   running = false;
+                   running4 = false;
+                   running5 = false;
+                   running6 = false;
                  }
               }
             }
@@ -141,6 +141,7 @@ void armController(){
 
 
 void usercontrol (void) { 
+  inAuto = false;
   preAutonBool = false;
   vex::task::stop(pre_autonTask);
   Brain.Screen.clearScreen(vex::color::black); //stops pre auton and clears screen
@@ -151,7 +152,7 @@ void usercontrol (void) {
 
   while (1) {
     vdrive(Controller.Axis3.value()*100/127.0, Controller.Axis2.value()*100/127.0);
-    intakeControl(running, rValue, lValue);
+    intakeControl(running4, rValue, lValue);
     trayControl();
   
     vex::task::sleep(20); 
@@ -164,7 +165,7 @@ void theAuton(void) {
 }
 
 int main() {
-    Competition.autonomous(BlueAutoTall);
+    Competition.autonomous(BlueAutoProt);
     Competition.drivercontrol(usercontrol);
     pre_auton();                        
     while(1) {

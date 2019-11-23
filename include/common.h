@@ -259,15 +259,23 @@ void trayControl() {
   if (trayLimit.value() == 1){
     tray.resetRotation();
   }
-  Controller.ButtonL2.pressed(moveBackAutomatically);
+  if(Controller.ButtonL2.pressing()){
+      vex::thread buttonAToggleTask(moveBackAutomatically);
+  }
   if (!armMoving){
   if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
     moveTray(90);                           
   } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
     if (tray.rotation(rev) > -4){
       moveTray(-60);
-    } else {
+    } else if (tray.rotation(rev) > -5.5){
       moveTray(-30);
+    } else {
+      if(Controller.ButtonUp.pressing()){
+        moveTray(-30);
+      } else {
+        moveTray(0);
+      }
     }
   } else if (trayMovingBackAutomat == false ){
     moveTray(0);
@@ -281,8 +289,58 @@ void trayControl() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////AUTON_FUNCTIONS//////////
+
+
 void wait(int millis) {
   vex::task::sleep(millis);
+}
+
+bool running = false, running2 = false, running3 = false;
+bool inAuto;
+
+void armControllerAuton(){
+  while (inAuto){
+      uint32_t t1 = timer::system();
+      uint32_t t2 = timer::system();
+      while(running == true){
+        t2 = timer::system();
+        uint32_t t3 = t2 - t1;
+        if(t3 < 500){
+          moveArm(100);
+          moveTray(-80);
+        } else if(t3 < 1000) {
+          moveArm(100);
+          moveTray(0);
+        } else {
+            uint32_t t4 = timer::system();
+            uint32_t t5 = timer::system();
+            while(running2){
+              t5 = timer::system();
+              if(t5-t4 < 500){
+                spinIntake(-75);
+              } else {
+                 uint32_t t6 = timer::system();
+                 uint32_t t7 = timer::system();
+                 while(running3){
+                  uint32_t t7 = timer::system();
+                  if(t7-t6 < 1000) {
+                    spinIntake(0);
+                    moveArm(-80);
+                  } else if(t7-t6 < 1500) {
+                    spinIntake(0);
+                    moveTray(80);
+                 } else {
+                   running3 = false;
+                   running2 = false;
+                   running = false;
+                 }
+              }
+            }
+          } 
+        }
+      }
+      vex::task::sleep(10); 
+  }
 }
 
 int deployTray() {
