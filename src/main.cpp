@@ -165,7 +165,7 @@ void theAuton(void) {
 }
 
 int main() {
-    Competition.autonomous(BlueAutoProt);
+    Competition.autonomous(RedAutoProt);
     Competition.drivercontrol(usercontrol);
     pre_auton();                        
     while(1) {

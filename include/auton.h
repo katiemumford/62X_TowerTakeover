@@ -403,7 +403,9 @@ void RedAutoProt(){
 
   spinIntake(100); //Start intaking and drive forward as deploy is happening
 
-  basicEncoderDrive(40,3.5,true);
+  basicEncoderDrive(50,1.75,true);
+
+  basicEncoderDrive(30,1.75,true);
 
   gyroTurn3(-50,20,20,10);
 
@@ -411,15 +413,17 @@ void RedAutoProt(){
 
   gyroTurn3(-135,40,40,10);
 
-  basicEncoderDrive(60,2.95,true);
+  basicEncoderDrive(70,3,true);
 
-  spinIntake(-30);
+  wait(100);
+
+  spinIntake(-15);
 
   gyroTurn3(-138,10,10,10);
 
-  spinIntake(0);
+  spinIntake(-5);
 
-  basicEncoderDrive(30,.2,true);
+  basicEncoderDrive(30,.4,true);
 
   moveTray(-80);
 
@@ -456,23 +460,23 @@ void BlueAutoProt(){
 
   spinIntake(100); //Start intaking and drive forward as deploy is happening
   
-  basicEncoderDrive(40,3.5,true);
+  basicEncoderDrive(35,3.5,true);
 
   gyroTurn3(50,20,20,10);
 
   basicEncoderDrive(40,.6,true);
 
-  gyroTurn3(135,50,50,10);
+  gyroTurn3(145,50,50,10);
 
   basicEncoderDrive(60,2.95,true);
 
   spinIntake(-20);
 
-  gyroTurn3(138,10,10,10);
+  gyroTurn3(145,10,10,10);
 
   spinIntake(0);
 
-  basicEncoderDrive(30,.2,true);
+  basicEncoderDrive(30,.25,true);
 
   moveTray(-80);
 
