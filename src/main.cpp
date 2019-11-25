@@ -145,11 +145,12 @@ void usercontrol (void) {
   preAutonBool = false;
   vex::task::stop(pre_autonTask);
   Brain.Screen.clearScreen(vex::color::black); //stops pre auton and clears screen
+  //vex::thread t(deployTray); //Start deploy thread
+  //t.join();
 
   vex::thread buttonAToggleTask(armController);
   int32_t lValue = lin.position(vex::rotationUnits::deg);
   int32_t rValue = rin.position(vex::rotationUnits::deg);
-
   while (1) {
     vdrive(Controller.Axis3.value()*100/127.0, Controller.Axis2.value()*100/127.0);
     intakeControl(running4, rValue, lValue);

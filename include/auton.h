@@ -94,7 +94,7 @@ void RedAuto(){
 
   spinIntake(-5);
 
-  wait(2250);
+  wait(2500);
 
   spinIntake(-60);
 
@@ -219,11 +219,11 @@ void BlueAuto(){
 
   spinIntake(-25);
 
-  basicEncoderDrive(30,.75,true);
+  basicEncoderDrive(30,.35,true);
 
   spinIntake(-5);
 
-  wait(2250);
+  wait(2500);
 
   spinIntake(-60);
 
@@ -402,32 +402,26 @@ void RedAutoProt(){
   wait(200); //Wait for 200ms for arm to fall
 
   spinIntake(100); //Start intaking and drive forward as deploy is happening
-
-  basicEncoderDrive(50,1.75,true);
-
-  basicEncoderDrive(30,1.75,true);
+  
+  basicEncoderDrive(35,3.5,true);
 
   gyroTurn3(-50,20,20,10);
 
   basicEncoderDrive(40,.6,true);
 
-  gyroTurn3(-135,40,40,10);
+  gyroTurn3(-122,50,50,10);
 
-  basicEncoderDrive(70,3,true);
+  basicEncoderDrive(60,2.90,true);
 
-  wait(100);
+  gyroTurn3(-140,10,10,10);
 
-  spinIntake(-15);
+  spinIntake(-20);
 
-  gyroTurn3(-138,10,10,10);
-
-  spinIntake(-5);
-
-  basicEncoderDrive(30,.4,true);
+  basicEncoderDrive(30,.35,true);
 
   moveTray(-80);
 
-  wait(2750);
+  wait(2500);
 
   spinIntake(-60);
 

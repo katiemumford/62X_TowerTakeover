@@ -268,7 +268,7 @@ void trayControl() {
   } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
     if (tray.rotation(rev) > -4){
       moveTray(-60);
-    } else if (tray.rotation(rev) > -5.5){
+    } else if (tray.rotation(rev) > -5.95){
       moveTray(-30);
     } else {
       if(Controller.ButtonUp.pressing()){
@@ -345,8 +345,8 @@ void armControllerAuton(){
 
 int deployTray() {
   moveArm(100);
-  vex::this_thread::sleep_for(400);
-  moveArm(-70);
+  vex::this_thread::sleep_for(600);
+  moveArm(-100);
   vex::this_thread::sleep_for(400);
   moveArm(0);
   return(0);
