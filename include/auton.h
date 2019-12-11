@@ -22,10 +22,7 @@ double turn2b = 0.5; //turn toward zone
 double distance2c = 0.2*squareDistance; //drive to zone
 double distance2d = distance2d;//back away from zone
 
-void noAuton() {
-  deployTray();
-}
-
+//Helper classes for SkillsAuto
 void placeCubes(){
   spinIntake(-40);//Outake to get cube at the right spot
   wait(900);
@@ -52,57 +49,68 @@ void placeTower(){
   running3 = true;
   wait(2000);
 }
-//RedAuto, picks up 4 cubes
+//6 cubes on unprotected side
 void RedAuto(){
-  setBraking(); //Set motors to break
-  /**
-  vex::thread t(deployTray);
-  resetGyro();
-  t.join();
-  */
-
-  resetGyro(); //Calibrate the Gyroscope
-
   basicEncoderDrive(70,.5,true);
-
   basicEncoderDrive(70,-.3,true);
 
   vex::thread t(deployTray); //Start deploy thread
-
   t.join(); //Wait for deploy thread to finish
 
   moveArm(-30); //Set arm to downward power
-
   wait(200); //Wait for 200ms for arm to fall
 
   spinIntake(100); //Start intaking and drive forward as deploy is happening
   basicEncoderDrive(30,4,true);
 
   spinIntake(70); //Start intaking and drive forward as deploy is happening
-  
   basicEncoderDrive(50,-3.75,true);
 
   spinIntake(0);
-
   gyroTurn3(100,35,35,10);
 
   moveTray(-80);
-
   spinIntake(-25);
-
   basicEncoderDrive(30,.75,true);
 
   spinIntake(-5);
-
   wait(2500);
-
   spinIntake(-60);
-
   moveTray(0);
 
   basicEncoderDrive(18,-1,true);
 }
+void BlueAuto(){
+  basicEncoderDrive(70,.5,true);
+  basicEncoderDrive(70,-.3,true);
 
+  vex::thread t(deployTray); //Start deploy thread
+  t.join(); //Wait for deploy thread to finish
+
+  moveArm(-30); //Set arm to downward power
+  wait(200); //Wait for 200ms for arm to fall
+
+  spinIntake(100); //Start intaking and drive forward as deploy is happening
+  basicEncoderDrive(30,4,true);
+
+  spinIntake(70); //Start intaking and drive forward as deploy is happening
+  basicEncoderDrive(50,-3.75,true);
+
+  spinIntake(0);
+  gyroTurn3(-100,35,35,10);
+
+  moveTray(-80);
+  spinIntake(-25);
+  basicEncoderDrive(30,.35,true);
+
+  spinIntake(-5);
+  wait(2500);
+  spinIntake(-60);
+  moveTray(0);
+
+  basicEncoderDrive(18,-1,true);
+}
+//2 cubes on protected side
 void RedAutoTall(){
   setBraking(); //Set motors to break
 
@@ -141,7 +149,6 @@ void RedAutoTall(){
 
   basicEncoderDrive(25,-1,true, 2);
 }
-
 void BlueAutoTall(){
   setBraking(); //Set motors to break
 
@@ -181,57 +188,7 @@ void BlueAutoTall(){
   basicEncoderDrive(35,-1,true, 2);
 
 }
-
-void BlueAuto(){
-  setBraking(); //Set motors to break
-  /**
-  vex::thread t(deployTray);
-  resetGyro();
-  t.join();
-  */
-
-  resetGyro(); //Calibrate the Gyroscope
-
-  basicEncoderDrive(70,.5,true);
-
-  basicEncoderDrive(70,-.3,true);
-
-  vex::thread t(deployTray); //Start deploy thread
-
-  t.join(); //Wait for deploy thread to finish
-
-  moveArm(-30); //Set arm to downward power
-
-  wait(200); //Wait for 200ms for arm to fall
-
-  spinIntake(100); //Start intaking and drive forward as deploy is happening
-  basicEncoderDrive(30,4,true);
-
-  spinIntake(70); //Start intaking and drive forward as deploy is happening
-  
-  basicEncoderDrive(50,-3.75,true);
-
-  spinIntake(0);
-
-  gyroTurn3(-100,35,35,10);
-
-  moveTray(-80);
-
-  spinIntake(-25);
-
-  basicEncoderDrive(30,.35,true);
-
-  spinIntake(-5);
-
-  wait(2500);
-
-  spinIntake(-60);
-
-  moveTray(0);
-
-  basicEncoderDrive(18,-1,true);
-}
-
+//8 cubes on unprotected side(WIP)
 void RedAuto2(){
    
  setBraking(); //Set motors to break
@@ -304,7 +261,6 @@ void RedAuto2(){
  
  spinIntake(-10);
 }
-
 void BlueAuto2() {
 
     setBraking(); //Set motors to break
@@ -379,139 +335,95 @@ void BlueAuto2() {
   spinIntake(-10);
 }
 
+//6 cubes on protected side
 void RedAutoProt(){
-  setBraking(); //Set motors to break
-  /**
-  vex::thread t(deployTray);
-  resetGyro();
-  t.join();
-  */
-
-  resetGyro(); //Calibrate the Gyroscope
-
   basicEncoderDrive(70,.5,true);
-
   basicEncoderDrive(70,-.3,true);
 
   vex::thread t(deployTray); //Start deploy thread
-
   t.join(); //Wait for deploy thread to finish
 
   moveArm(-30); //Set arm to downward power
-
   wait(200); //Wait for 200ms for arm to fall
 
   spinIntake(100); //Start intaking and drive forward as deploy is happening
   
   basicEncoderDrive(35,3.5,true);
-
   gyroTurn3(-50,20,20,10);
-
+  
   basicEncoderDrive(40,.6,true);
-
   gyroTurn3(-122,50,50,10);
 
   basicEncoderDrive(60,2.90,true);
-
   gyroTurn3(-140,10,10,10);
 
   spinIntake(-20);
-
   basicEncoderDrive(30,.35,true);
-
+  
   moveTray(-80);
-
   wait(2500);
-
   spinIntake(-60);
-
   moveTray(0);
 
   basicEncoderDrive(18,-1,true);
 }
-
 void BlueAutoProt(){
-   setBraking(); //Set motors to break
-  /**
-  vex::thread t(deployTray);
-  resetGyro();
-  t.join();
-  */
-
-  resetGyro(); //Calibrate the Gyroscope
-
   basicEncoderDrive(70,.5,true);
-
   basicEncoderDrive(70,-.3,true);
 
   vex::thread t(deployTray); //Start deploy thread
-
   t.join(); //Wait for deploy thread to finish
 
   moveArm(-30); //Set arm to downward power
-
   wait(200); //Wait for 200ms for arm to fall
-
   spinIntake(100); //Start intaking and drive forward as deploy is happening
   
   basicEncoderDrive(35,3.5,true);
-
   gyroTurn3(50,20,20,10);
 
   basicEncoderDrive(40,.6,true);
-
   gyroTurn3(145,50,50,10);
 
   basicEncoderDrive(60,2.95,true);
-
   spinIntake(-20);
-
   gyroTurn3(145,10,10,10);
-
   spinIntake(0);
-
   basicEncoderDrive(30,.25,true);
 
   moveTray(-80);
-
   wait(2750);
-
   spinIntake(-60);
-
   moveTray(0);
 
   basicEncoderDrive(18,-1,true);
 }
-
+//10 cubes, 1 tower, 6 cubes, 1 tower
 void SkillsAuto(){
   inAuto = true;
   vex::thread arms(armControllerAuton);
 
-  setBraking(); //Set motors to break
-  /**
-  vex::thread t(deployTray);
-  resetGyro();
-  t.join();
-  */
-
-  resetGyro(); //Calibrate the Gyroscope
-
   basicEncoderDrive(70,.5,true);
-
   basicEncoderDrive(70,-.3,true);
 
   vex::thread t(deployTray); //Start deploy thread
   t.join(); //Wait for deploy thread to finish
+
   moveArm(-30); //Set arm to downward power
   wait(200); //Wait for 200ms for arm to fall
+
   spinIntake(100); //Start intaking and drive forward as deploy is happening
   basicEncoderDrive(40,9,true); //Pick up all 8 cubes
+
   spinIntake(60); //Start intaking and drive forward as deploy is happening
   gyroTurn3(35,20,20,10);//Turn to blue area
+
   basicEncoderDrive(30,.8,true); //Drive to blue area
+
   placeCubes();
+
   moveTray(80);
   gyroTurn3(-95,45,45,10);//Turn towards tower
+
   spinIntake(100);
   basicEncoderDrive(40,2.9,true);//Drive towards tower and pick up cube
   spinIntake(0);
@@ -519,8 +431,8 @@ void SkillsAuto(){
   placeTower();
 
   spinIntake(100);
-
   gyroTurn3(-190,35,35,10);//Turn towards cubes
+
   basicEncoderDrive(40,8,true); //Pick up all 6 cubes
   gyroTurn3(-260,30,30,10);//Turn towards Red corner
   basicEncoderDrive(40,2.6,true); //Drive to red corner
@@ -528,8 +440,8 @@ void SkillsAuto(){
   placeCubes();
 
   moveTray(80);
-
   gyroTurn3(-110,30,30,10);//Turn towards cubes
+
   spinIntake(100);
   basicEncoderDrive(40,2.0,true);//Drive towards tower and pick up cube
   moveTray(0);
@@ -538,10 +450,12 @@ void SkillsAuto(){
 
   placeTower();
 }
+//Run deploy method
 void deployTest(){
   vex::thread t(deployTray); //Start deploy thread
   t.join(); //Wait for deploy thread to finish
 }
+
 /*
 void RedAuto3() {
 
@@ -605,7 +519,6 @@ void RedAuto3() {
   //Back away from our cubes
   basicEncoderDrive(50,-1,true);
 }
-
 void RedAuto4() {
 
   //Reset gyros and set motors to break
@@ -649,7 +562,6 @@ void RedAuto4() {
   //Back away from our cubes
   basicEncoderDrive(50,-1,true);
 }
-
 void blueAuto(){
   setBraking();
   //resetGyro(false);
@@ -690,14 +602,12 @@ void blueAuto(){
   basicEncoderDrive(35,-1,true, 2);
 
 }
-
 void AutoChoice(){
     if(!Controller.ButtonA.pressing())
       RedAuto2();
     else
       RedAuto();
 }
-
 void test(){
   setBraking();
   resetGyro();
@@ -711,8 +621,6 @@ void test(){
   gyroTurn3(90,40,40);
   gyroTurn3(0,40,40);
 }
-
-
 void red1() {
   deployTray();
   
@@ -740,8 +648,6 @@ void red1() {
   
   basicEncoderDrive(40, -distance1d, true);
 }
-
-
 void red2() {
   deployTray();
   /*
@@ -764,10 +670,6 @@ void red2() {
   basicEncoderDrive(40, -distance2d, true);
   
 }
-*/
-
-
-
 void blue1() {
   deployTray();
   
@@ -795,8 +697,6 @@ void blue1() {
   
   basicEncoderDrive(40, -distance1d, true);
 }
-
-
 void blue2() {
   deployTray();
   /*
@@ -817,5 +717,5 @@ void blue2() {
   moveTray(0);
   wait(500);
   basicEncoderDrive(40, -distance2d, true);
-  */
 }
+*/

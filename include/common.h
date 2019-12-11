@@ -77,7 +77,6 @@ void moveArm(int pct) {
   }
 }
 
-
 void moveTray(int pct) {
   if (pct!= 0) {
 
@@ -99,7 +98,7 @@ void moveTray(int pct) {
 #pragma region
 
 /////////////////INTAKE////////////////////////////////////////////////////////////////////////////////////////////
-void intakeControl(bool running, int32_t rValue, int32_t lValue) {
+void intakeControl(bool running, int32_t rValue, int32_t lValue, bool isaac) {
   //if R1 is pressed, intake intakes at 100 until unpressed
   //if R2 pressed, intake outakes at -100 until unpressed
   //if R1 and (shiftKey) L2 pressed, intake intakes at 50 until unpressed
@@ -131,104 +130,98 @@ void intakeControl(bool running, int32_t rValue, int32_t lValue) {
 /////////////////ARM CONTROL///////////////////////////////////////////////////////////////////////////////////////
 
 void armControl() {   //big function for controlling arms
+  /**
+  if (Controller.ButtonX.pressing()){   //if X is continously pressed
+    moveArm(80);
+    if (tray.rotation(rev) > -1){
+        moveTray(-80);
+      } else {
+        moveTray(0);
+      }
+  } else if (Controller.ButtonB.pressing()){
+    moveArm(-50);
+    Controller.Screen.print("i should be going down");
+  } else {
+    moveArm(0);
+  }
+  */
+
+  if(Controller.ButtonA.pressing()){
+
+  }
+
+  /** works
+  if (Controller.ButtonX.pressing()){
+    Controller.Screen.print("i am pressed");
+    armMoving =true;
+    moveArm(100);
+  } else if (Controller.ButtonB.pressing()){
+    moveArm(-100);
+    armMoving = true;
+  } else {
+    moveArm(0);
+
+    armMoving = false;
+  }
+  **/
+}
 /**
- if (Controller.ButtonX.pressing()){   //if X is continously pressed
-  moveArm(80);
-  if (tray.rotation(rev) > -1){
-      moveTray(-80);
-    } else {
-      moveTray(0);
+  if (!armMoving){
+    arm.stop(hold);
+  }
+
+  void armUpLowTower(){ //move arm from current position to low tower
+    Controller.Screen.print("x was pressed i should move up");
+    armMoving = true;
+    tray.rotateTo(-1, vex::rotationUnits::rev, 50, vex::velocityUnits::pct,false);
+    arm.rotateTo(lowTowerHeight, vex::rotationUnits::rev, 50, vex::velocityUnits::pct,true);
+    armMoving = false;
+
+  }
+
+  void armUpMidTower(){
+    //move arm from current position to mid tower
+    armMoving = true;
+    tray.rotateTo(-trayForwardArmUp, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+    arm.rotateTo(midTowerHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+    armMoving = false;
+
+  }
+
+  void armDownIntakePos(){
+    //move arm from current position to intake position
+    
+    armMoving = true;
+    tray.rotateTo(trayForwardArmUp, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+    arm.rotateTo(bottomHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
+    armMoving = false;
+
+  }
+  void armControl() {   //big function for controlling arms
+
+  if (arm.value()<50 && intaking && !armMoving){
+      arm.spin(vex::directionType::rev, 2, vex::voltageUnits::volt);
     }
- } else if (Controller.ButtonB.pressing()){
-   moveArm(-50);
-   Controller.Screen.print("i should be going down");
- } else {
-   moveArm(0);
- }
- */
 
- if(Controller.ButtonA.pressing()){
+  Controller.ButtonX.pressed(armUpLowTower); //when X is pressed once, move arm to mid twr
+  Controller.ButtonY.pressed(armUpMidTower); //when Y is pressed once, move arm to low tower
+  Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return tray to lower
 
- }
-}
+  if (intaking && !armMoving && arm.value()<50){                      //apply downword volume when intaking
+  arm.spin(vex::directionType::rev, 2, vex::voltageUnits::volt);
+  } else {
+    arm.stop(vex::brakeType::brake);                                //brake any other time
+  }
 
-/** works
-if (Controller.ButtonX.pressing()){
-   Controller.Screen.print("i am pressed");
-  armMoving =true;
-  moveArm(100);
-} else if (Controller.ButtonB.pressing()){
-  moveArm(-100);
-  armMoving = true;
-} else {
-  moveArm(0);
+  Controller.ButtonX.pressed(armUpLowTower); //when X is pressed once, move arm to mid twr
+  Controller.ButtonY.pressed(armUpMidTower); //when Y is pressed once, move arm to low tower
+  Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return tray to lower
 
-  armMoving = false;
-}
+    if (arm.value()<50 && intaking && !armMoving){
+      arm.spin(vex::directionType::rev, 2, vex::voltageUnits::volt);
+    }
+  }
 **/
- 
-
-//when x is continously pressed, the tray should move forward a little bit 
-
-
-/**
-if (!armMoving){
-  arm.stop(hold);
-}
-
-void armUpLowTower(){ //move arm from current position to low tower
-  Controller.Screen.print("x was pressed i should move up");
-  armMoving = true;
-  tray.rotateTo(-1, vex::rotationUnits::rev, 50, vex::velocityUnits::pct,false);
-  arm.rotateTo(lowTowerHeight, vex::rotationUnits::rev, 50, vex::velocityUnits::pct,true);
-  armMoving = false;
-
-}
-
-void armUpMidTower(){
-  //move arm from current position to mid tower
-  armMoving = true;
-  tray.rotateTo(-trayForwardArmUp, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
-  arm.rotateTo(midTowerHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
-  armMoving = false;
-
-}
-
-void armDownIntakePos(){
-  //move arm from current position to intake position
-  
-  armMoving = true;
-  tray.rotateTo(trayForwardArmUp, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
-  arm.rotateTo(bottomHeight, vex::rotationUnits::rev, 100, vex::velocityUnits::pct,true);
-  armMoving = false;
-
-}
-void armControl() {   //big function for controlling arms
-
-if (arm.value()<50 && intaking && !armMoving){
-     arm.spin(vex::directionType::rev, 2, vex::voltageUnits::volt);
-   }
-
-Controller.ButtonX.pressed(armUpLowTower); //when X is pressed once, move arm to mid twr
-Controller.ButtonY.pressed(armUpMidTower); //when Y is pressed once, move arm to low tower
-Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return tray to lower
-
-if (intaking && !armMoving && arm.value()<50){                      //apply downword volume when intaking
- arm.spin(vex::directionType::rev, 2, vex::voltageUnits::volt);
-} else {
-  arm.stop(vex::brakeType::brake);                                //brake any other time
-}
-
-Controller.ButtonX.pressed(armUpLowTower); //when X is pressed once, move arm to mid twr
-Controller.ButtonY.pressed(armUpMidTower); //when Y is pressed once, move arm to low tower
-Controller.ButtonB.pressed(armDownIntakePos); //when B is pressed once, return tray to lower
-
-   if (arm.value()<50 && intaking && !armMoving){
-     arm.spin(vex::directionType::rev, 2, vex::voltageUnits::volt);
-   }
- }
-**/
-
 
 /////////////////TRAY CONTROL///////////////////////////////////////////////////////////////////////////////////////
 bool trayMovingBackAutomat = false;
@@ -254,7 +247,7 @@ void moveBackAutomatically(){
   **/
 }
 
-void trayControl() {
+void trayControl(bool isaac) {
   //if limit switch hit, reset encoder to zero
   if (trayLimit.value() == 1){
     tray.resetRotation();
@@ -282,8 +275,6 @@ void trayControl() {
   }
   }
 }
-
-  
 
 #pragma endregion
 
@@ -353,7 +344,7 @@ int deployTray() {
 }
 
 void outtakeSome() {
-spinIntake(-50);
+  spinIntake(-50);
   wait(300);
   spinIntake(0);
 }
@@ -409,8 +400,7 @@ void gyroTurn(double target) {
 }
 //DegreeAmount (0 - 360) degrees robot will turn
 //veloc (0 - 100) percent of motor power given
-void gyroTurn2 (double DegreeAmount, int velocL, int velocR)
-{
+void gyroTurn2 (double DegreeAmount, int velocL, int velocR){
     //Set speeds of both Drive motors
     lF.setVelocity(velocL,velocityUnits::pct);
     rF.setVelocity(velocR,velocityUnits::pct);
@@ -479,8 +469,7 @@ void gyroTurn2 (double DegreeAmount, int velocL, int velocR)
 
 //DegreeAmount (0 - 360) degrees robot will turn
 //veloc (0 - 100) percent of motor power given
-void gyroTurn3 (double DegreeAmount, int velocL, int velocR, int min)
-{
+void gyroTurn3 (double DegreeAmount, int velocL, int velocR, int min){
 
     //Prints the DegreeAmount for debugging puroses to ensure that it is going for the right degree amount
     Controller.Screen.clearScreen();
@@ -542,12 +531,14 @@ void gyroTurn3 (double DegreeAmount, int velocL, int velocR, int min)
 
 int resetGyro() {
   Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
   Controller.Screen.print("Calibrating Gyro...");
   Gyro.startCalibration();
   while(Gyro.isCalibrating()){
     vex::this_thread::sleep_for(10);
   }
   Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
   Controller.Screen.print("Done!");
   return(0);
 }

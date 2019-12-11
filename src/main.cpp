@@ -12,11 +12,11 @@ struct Auton {
 };
 
 int autonNum = 0; //the index (number) of the auton chosen
-bool preAutonBool;
+bool preAutonBool = true;
 
 //array of auton programs
 std::vector<Auton> autons = { 
-  {noAuton, "No Auton"},
+  //{noAuton, "No Auton"},
   {RedAuto2, "Red 6-7"},
   {BlueAuto2, "Blue 6-7"}
   //{blue1, "Blue 1"},
@@ -74,10 +74,45 @@ int pre_autonTask() { //the auton selection runs in pre-auton
   }
   return 0;
 }
+bool IsaacDriving = false;
 
+int preAutonGyro(){
+  bool ran = false;
+  while(!ran && preAutonBool){
+    Controller.Screen.clearScreen();
+    Controller.Screen.newLine();
+    Controller.Screen.print("preAutonBool: ");
+    Controller.Screen.print(preAutonBool);
+    if(Brain.Screen.pressing() && !ran){
+      ran = true;
+      resetGyro();
+    } 
+  }
+  ran = false;
+  Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
+  Controller.Screen.print("Isaac Driving: ");
+  Controller.Screen.print(IsaacDriving);
+  while(!ran && preAutonBool){
+    Controller.Screen.clearScreen();
+    Controller.Screen.newLine();
+    Controller.Screen.print("preAutonBool: ");
+    Controller.Screen.print(preAutonBool);
+    if(Brain.Screen.pressing() && !ran){
+      ran = true;
+      IsaacDriving = !IsaacDriving;
+      Controller.Screen.newLine();
+      Controller.Screen.print("Isaac Driving: ");
+      Controller.Screen.print(IsaacDriving);
+      
+    }
+  }
+  return 0;
+}
+vex::task p;
 void pre_auton( void ) {  
-  preAutonBool = true;
-  vex::task p(pre_autonTask);
+  setBraking(); 
+  p.priority(preAutonGyro);
 }
 
 bool isBraking = false;
@@ -85,7 +120,6 @@ bool isBraking = false;
 bool running4 = false;
 void armController(){
   bool running5 = false, running6 = false;
-
   while (true){
       if (Controller.ButtonA.pressing()){
         running4 = true;
@@ -143,7 +177,7 @@ void armController(){
 void usercontrol (void) { 
   inAuto = false;
   preAutonBool = false;
-  vex::task::stop(pre_autonTask);
+  vex::task::stop(preAutonGyro);
   Brain.Screen.clearScreen(vex::color::black); //stops pre auton and clears screen
   //vex::thread t(deployTray); //Start deploy thread
   //t.join();
@@ -152,9 +186,13 @@ void usercontrol (void) {
   int32_t lValue = lin.position(vex::rotationUnits::deg);
   int32_t rValue = rin.position(vex::rotationUnits::deg);
   while (1) {
-    vdrive(Controller.Axis3.value()*100/127.0, Controller.Axis2.value()*100/127.0);
-    intakeControl(running4, rValue, lValue);
-    trayControl();
+    if(IsaacDriving)
+      vdrive((abs(Controller.Axis3.value())/127.0)*(Controller.Axis3.value()/127.0)*100, (abs(Controller.Axis2.value())/127.0) *(Controller.Axis2.value()/127.0)*100);
+    else
+      vdrive(Controller.Axis3.value()*100.0/127.0, Controller.Axis2.value()*100/127.0);
+
+    intakeControl(running4, rValue, lValue, IsaacDriving);
+    trayControl(IsaacDriving);
   
     vex::task::sleep(20); 
   }
@@ -165,8 +203,13 @@ void theAuton(void) {
   autons[autonNum].ref();
 }
 
+void auton(void){
+  preAutonBool = false;
+  RedAutoProt();
+}
+
 int main() {
-    Competition.autonomous(RedAutoProt);
+    Competition.autonomous(auton);
     Competition.drivercontrol(usercontrol);
     pre_auton();                        
     while(1) {
