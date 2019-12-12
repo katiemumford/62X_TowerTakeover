@@ -101,6 +101,7 @@ void moveTray(int pct) {
 //////////DRIVER_FUNCTIONS//////////
 #pragma region
 bool in, out,slow;
+bool prevIn = false, currentIntake = false;
 /////////////////INTAKE////////////////////////////////////////////////////////////////////////////////////////////
 void intakeControl(bool running, int32_t rValue, int32_t lValue, bool isaac) {
   //if R1 is pressed, intake intakes at 100 until unpressed
@@ -109,33 +110,47 @@ void intakeControl(bool running, int32_t rValue, int32_t lValue, bool isaac) {
   //if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
   slow = Controller.ButtonY.pressing();
   if(isaac){
-    in = Controller.ButtonR1.pressing();
     out = Controller.ButtonL1.pressing();
+    if(Controller.ButtonR1.pressing() && !out){
+      if(prevIn == in)
+        in = !in;
+    } else {
+      prevIn = in;
+    } 
   } else {
     in = Controller.ButtonR1.pressing();
     out = Controller.ButtonR2.pressing();
   }
-  if(!running){
-    if(out && in){
-      spinIntake(0);
-      moveArm(0);
+  if(!isaac){
+    if(!running){
+      if(out && isaac){
+        in = false;
+        spinIntake(-100);
+        moveArm(0);
+      }
+      else if(out && in){
+        spinIntake(0);
+        moveArm(0);
+      }
+      else if(in){
+        spinIntake(100);
+        moveArm(-5);
+      } 
+      else if(out){
+        spinIntake(-100);
+        moveArm(0);
+      } 
+      else if(slow){
+        spinIntake(-15);
+        moveArm(0);
+      }
+      else {
+        spinIntake(0);
+        moveArm(0);
+      }
     }
-    else if(in){
-      spinIntake(100);
-      moveArm(-5);
-    } 
-    else if(out){
-      spinIntake(-100);
-      moveArm(0);
-    } 
-    else if(slow){
-      spinIntake(-15);
-      moveArm(0);
-    }
-    else {
-      spinIntake(0);
-      moveArm(0);
-    }
+  } else {
+    
   }
 }
 
