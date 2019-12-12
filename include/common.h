@@ -30,6 +30,8 @@ double trayForwardArmUp = 1.5;      //amount of rev tray moves forward for arms
 double lowTowerHeight = 1.9;       //amount of rev arm moves up for low tower
 double midTowerHeight = 2.5; 
 double bottomHeight = 0;      //amount of rev arm moves up for mid tower
+bool drivingBack = false;
+
 
 //tray moves back the same amount
 //arms move back down to zero revs
@@ -48,15 +50,17 @@ void drive(double l,  double r) { //percent drive
 }
 
 void vdrive(double l, double r) { //voltage drive
-  if (l < minPct && l > -minPct) { l = 0; }
-  if (r < minPct && r > -minPct) { r = 0; } //accounts for stick drift
-  l *= 12.0/100;
-  r *= 12.0/100; //converts to volts
+  if(!drivingBack){
+    if (l < minPct && l > -minPct) { l = 0; }
+    if (r < minPct && r > -minPct) { r = 0; } //accounts for stick drift
+    l *= 12.0/100;
+    r *= 12.0/100; //converts to volts
 
-  lF.spin(vex::directionType::fwd, l, vex::voltageUnits::volt);
-  lB.spin(vex::directionType::fwd, l, vex::voltageUnits::volt);
-  rF.spin(vex::directionType::fwd, r, vex::voltageUnits::volt);
-  rB.spin(vex::directionType::fwd, r, vex::voltageUnits::volt);
+    lF.spin(vex::directionType::fwd, l, vex::voltageUnits::volt);
+    lB.spin(vex::directionType::fwd, l, vex::voltageUnits::volt);
+    rF.spin(vex::directionType::fwd, r, vex::voltageUnits::volt);
+    rB.spin(vex::directionType::fwd, r, vex::voltageUnits::volt);
+  }
 }
 
 void spinIntake(int pct) {
@@ -133,6 +137,17 @@ void intakeControl(bool running, int32_t rValue, int32_t lValue, bool isaac) {
       moveArm(0);
     }
   }
+}
+
+void basicEncoderDrive(double pct, double rev, bool wait) {
+  lF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  lB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  rF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+  if (wait) {
+      rB.rotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
+    return;
+  }
+  rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
 }
 
 /////////////////ARM CONTROL///////////////////////////////////////////////////////////////////////////////////////
@@ -232,8 +247,25 @@ void armControl() {   //big function for controlling arms
 **/
 
 /////////////////TRAY CONTROL///////////////////////////////////////////////////////////////////////////////////////
+
 bool trayMovingBackAutomat = false;
 bool trayMovingUpAutomat = false;
+
+void driveBack(){
+  drivingBack = true;
+  basicEncoderDrive(30, -1, true);
+  drivingBack = false;
+}
+
+void moveBackAutomatically(){
+  trayMovingBackAutomat = true;
+  if (trayLimit.value() == 0){    //if limit switch is not being hit, tray is up in air
+    while(trayLimit.value() != 1){  //so...until limit switch is hit, move tray
+      tray.spin(fwd, 100, pct);
+    }
+  }
+  trayMovingBackAutomat = false;
+}
 void moveUpAutomatically(){
   trayMovingUpAutomat = true;
   while(tray.rotation(rev) > -5.95){
@@ -254,28 +286,9 @@ void moveUpAutomatically(){
         moveTray(0);
       }
   }
+  driveBack();
+  moveBackAutomatically();
   trayMovingUpAutomat = false;
-}
-
-void moveBackAutomatically(){
-  trayMovingBackAutomat = true;
-  if (trayLimit.value() == 0){    //if limit switch is not being hit, tray is up in air
-    while(trayLimit.value() != 1){  //so...until limit switch is hit, move tray
-      tray.spin(fwd, 100, pct);
-    }
-  }
-  trayMovingBackAutomat = false;
-  //////////////alternate version
-  /**
-
-  if (trayLimit.value() == 0) {         //if limit switch not hit, move tray
-    tray.spin(fwd, 100, pct);
-  } else if (trayLimit.value() == 1) {    //if limit switch hit, stop moving and set bool to false
-    moveTray(0);                          //to signifty that this function is done running
-    trayMovingBackAutomat = false;
-  }
-
-  **/
 }
 bool up, down, autoRunUp;
 void trayControl(bool isaac) {
@@ -285,6 +298,9 @@ void trayControl(bool isaac) {
   }
   autoRunUp = isaac;
   if(isaac){
+    if(Controller.ButtonX.pressing()){
+      vex::thread moveBackwards(moveBackAutomatically);
+    }
     if(Controller.ButtonUp.pressing()){
       moveTray(-30);
       up = false;
@@ -602,17 +618,6 @@ void basicEncoderDrive(double pct, double rev, bool wait, double timeLimit) {
   if (wait) {
       rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
         while (clock() - start / CLOCKS_PER_SEC < timeLimit) {}
-    return;
-  }
-  rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
-}
-
-void basicEncoderDrive(double pct, double rev, bool wait) {
-  lF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
-  lB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
-  rF.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
-  if (wait) {
-      rB.rotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
     return;
   }
   rB.startRotateFor(rev, vex::rotationUnits::rev, pct, vex::velocityUnits::pct);
