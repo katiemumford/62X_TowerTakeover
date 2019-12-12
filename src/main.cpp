@@ -117,16 +117,26 @@ void pre_auton( void ) {
   setBraking(); 
   p.priority(preAutonGyro);
 }
-
+bool movingArmsManually = false;
+void moveArmsManually(){
+  while(true){
+    if(Controller.ButtonUp.pressing()){
+      moveArm(100);
+      movingArmsManually = true;
+    } else if(Controller.ButtonDown.pressing()){
+      moveArm(-25);
+      movingArmsManually = true;
+    }
+  }
+}
 bool isBraking = false;
-
 bool running4 = false;
 bool running4B = false;
 void armController(){
   bool running5 = false, running6 = false, running7 = false;
   bool moveOn = false;
-  
-  while (true){
+  vex::thread moveManual(moveArmsManually);
+  while (true && !movingArmsManually){
       if (Controller.ButtonA.pressing()){
         running4 = true;
         running4B = false;
@@ -136,7 +146,7 @@ void armController(){
       }
       uint32_t t1 = timer::system();
       uint32_t t2 = timer::system();
-      while(running4 || running4B){
+      while((running4 || running4B) && !movingArmsManually){
         t2 = timer::system();
         uint32_t t3 = t2 - t1;
         if(!moveOn){
@@ -159,7 +169,7 @@ void armController(){
             if(Controller.ButtonA.pressing()){
               running5 = true;
             }
-            while(running5){
+            while(running5 && !movingArmsManually){
               t5 = timer::system();
               if(t5-t4 < 500){
                 spinIntake(-75);
@@ -171,7 +181,7 @@ void armController(){
                  } else if (Controller.ButtonB.pressing()){
                    running7 = true;
                  }
-                 while(running7){
+                 while(running7 && !movingArmsManually){
                    t7 = timer::system();
                    spinIntake(0);
                    if(t7 - t6 > 1000){
@@ -182,7 +192,7 @@ void armController(){
                     }
                    }
                  }
-                 while(running6 && !running7){
+                 while(running6 && !running7 && !movingArmsManually){
                   uint32_t t7 = timer::system();
                   if(t7-t6 < 1250) {
                     spinIntake(0);
@@ -202,6 +212,14 @@ void armController(){
             }
           } 
         }
+      }
+      if(movingArmsManually){
+        running4 = false;
+        running5 = false;
+        running6 = false;
+        running7 = false;
+        running4B = false;
+        moveOn = false;
       }
       vex::task::sleep(10); 
   }
