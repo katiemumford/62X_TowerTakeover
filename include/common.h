@@ -283,23 +283,12 @@ void moveBackAutomatically(){
 }
 void moveUpAutomatically(){
   trayMovingUpAutomat = true;
-  while(tray.rotation(rev) > -5.95){
+  while(tray.rotation(rev) > -5.95 && !Controller.ButtonRight.pressing()){
     if (tray.rotation(rev) > -4){
       moveTray(-60);
     } else {
       moveTray(-30);
     }
-  }
-  if (tray.rotation(rev) > -4){
-    moveTray(-60);
-  } else if (tray.rotation(rev) > -5.95){
-      moveTray(-30);
-  } else {
-      if(Controller.ButtonUp.pressing()){
-        moveTray(-30);
-      } else {
-        moveTray(0);
-      }
   }
   driveBack();
   moveBackAutomatically();
@@ -316,7 +305,7 @@ void trayControl(bool isaac) {
     if(Controller.ButtonX.pressing()){
       vex::thread moveBackwards(moveBackAutomatically);
     }
-    if(Controller.ButtonUp.pressing()){
+    if(Controller.ButtonRight.pressing()){
       moveTray(-30);
       up = false;
       down = false;
@@ -340,7 +329,7 @@ void trayControl(bool isaac) {
           } else if (tray.rotation(rev) > -5.95){
             moveTray(-30);
           } else {
-            if(Controller.ButtonUp.pressing()){
+            if(Controller.ButtonRight.pressing()){
               moveTray(-30);
             } else {
                 moveTray(0);

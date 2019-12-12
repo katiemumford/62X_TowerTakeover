@@ -269,7 +269,46 @@ void auton(void){
   preAutonBool = false;
   RedAutoProt();
 }
+/**
+Universal:
+  When not raised:
+    A: move arms up to high tower
+    B: move arms up to low tower
+  When raised:
+    A: Outtake
+  After Outtake:
+    A: Move back down
+    B: Stay in place
+    When in place:
+      B: Move back down
+  
+  Shortcuts:
+    A/A/A: Place tower
+    B/A/A: Place low tower
+    A/A/B: stay raised on high tower (B again to lower)
+    B/A/B: Stay raised on low tower (B again to lower)
 
+  X: Back up automatically
+  Y: Move tray up manually
+  DpadLeft: Toggle on/off IsaacDriving 
+  DpadRight: Move tray up manually
+  DpadUp: Move arms up manually
+  DpadDown: Move arms down manually
+
+IsaacDriving: 
+  R1: Intake on toggle
+  L1: Outtake (not on toggle) and cancel intake
+  R2: Place Stack, back up, and lower tray
+  L2: Lower tray to back
+  **Squared drive curve**
+
+KatieDriving (!IsaacDriving)
+  R1: Intake (not toggle)
+  R2: Outtake (not toggle)
+  L1: Move tray up (must be held, goes to point and stops)
+  L2: Move tray down automatically
+  **1:1 drive**
+*/
 int main() {
     Competition.autonomous(auton);
     Competition.drivercontrol(usercontrol);
