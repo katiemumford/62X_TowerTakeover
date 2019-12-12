@@ -75,7 +75,7 @@ int pre_autonTask() { //the auton selection runs in pre-auton
   return 0;
 }
 bool IsaacDriving = false;
-
+bool prevAutoState = false;
 int preAutonGyro(){
   bool ran = false;
   while(!ran && preAutonBool){
@@ -93,18 +93,21 @@ int preAutonGyro(){
   Controller.Screen.newLine();
   Controller.Screen.print("Isaac Driving: ");
   Controller.Screen.print(IsaacDriving);
-  while(!ran && preAutonBool){
+  while(preAutonBool){
     Controller.Screen.clearScreen();
     Controller.Screen.newLine();
     Controller.Screen.print("preAutonBool: ");
     Controller.Screen.print(preAutonBool);
-    if(Brain.Screen.pressing() && !ran){
-      ran = true;
-      IsaacDriving = !IsaacDriving;
+    
+    if(Brain.Screen.pressing()){
+      if(prevAutoState == IsaacDriving){
+        IsaacDriving = !IsaacDriving;
+      }
       Controller.Screen.newLine();
       Controller.Screen.print("Isaac Driving: ");
       Controller.Screen.print(IsaacDriving);
-      
+    } else {
+      prevAutoState = IsaacDriving;
     }
   }
   return 0;
@@ -204,7 +207,7 @@ void armController(){
   }
 }
 
-
+bool prevDriveState = false;
 void usercontrol (void) { 
   inAuto = false;
   preAutonBool = false;
@@ -217,6 +220,13 @@ void usercontrol (void) {
   int32_t lValue = lin.position(vex::rotationUnits::deg);
   int32_t rValue = rin.position(vex::rotationUnits::deg);
   while (1) {
+    if(Controller.ButtonLeft.pressing()){
+      if(prevDriveState == IsaacDriving){
+        IsaacDriving = !IsaacDriving;
+      }
+    } else {
+      prevDriveState = IsaacDriving;
+    }
     if(IsaacDriving)
       vdrive((abs(Controller.Axis3.value())/127.0)*(Controller.Axis3.value()/127.0)*100, (abs(Controller.Axis2.value())/127.0) *(Controller.Axis2.value()/127.0)*100);
     else
