@@ -126,6 +126,9 @@ void moveArmsManually(){
     } else if(Controller.ButtonDown.pressing()){
       moveArm(-25);
       movingArmsManually = true;
+    } else {
+      movingArmsManually = false;
+      moveArm(0);
     }
   }
 }
