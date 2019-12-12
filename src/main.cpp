@@ -118,24 +118,39 @@ void pre_auton( void ) {
 bool isBraking = false;
 
 bool running4 = false;
+bool running4B = false;
 void armController(){
-  bool running5 = false, running6 = false;
+  bool running5 = false, running6 = false, running7 = false;
+  bool moveOn = false;
+  
   while (true){
       if (Controller.ButtonA.pressing()){
         running4 = true;
+        running4B = false;
+      } else if(Controller.ButtonB.pressing()){
+        running4B = true;
+        running4 = false;
       }
       uint32_t t1 = timer::system();
       uint32_t t2 = timer::system();
-      while(running4 == true){
+      while(running4 || running4B){
         t2 = timer::system();
         uint32_t t3 = t2 - t1;
-        if(t3 < 750){
-          moveArm(100);
-          moveTray(-95);
-        } else if(t3 < 1000) {
-          moveArm(100);
-          moveTray(0);
-        } else {
+        if(!moveOn){
+          if(t3 < 750){
+            moveArm(100);
+            moveTray(-95);
+          } else if(t3 < 800) {
+            moveArm(100);
+            moveTray(0);
+          } else {
+            if(running4B){
+              moveArm(2);
+            }
+            moveOn = true;
+          }
+        } 
+         else {
             uint32_t t4 = timer::system();
             uint32_t t5 = timer::system();
             if(Controller.ButtonA.pressing()){
@@ -150,8 +165,21 @@ void armController(){
                  uint32_t t7 = timer::system();
                  if(Controller.ButtonA.pressing()){
                   running6 = true;
-                 } 
-                 while(running6){
+                 } else if (Controller.ButtonB.pressing()){
+                   running7 = true;
+                 }
+                 while(running7){
+                   t7 = timer::system();
+                   spinIntake(0);
+                   if(t7 - t6 > 1000){
+                     if(Controller.ButtonB.pressing()) {
+                      running7 = false;
+                      running6 = true;
+                      t6 = timer::system();
+                    }
+                   }
+                 }
+                 while(running6 && !running7){
                   uint32_t t7 = timer::system();
                   if(t7-t6 < 1250) {
                     spinIntake(0);
@@ -160,9 +188,12 @@ void armController(){
                     spinIntake(0);
                     moveTray(80);
                  } else {
-                   running4 = false;
-                   running5 = false;
-                   running6 = false;
+                    running4 = false;
+                    running5 = false;
+                    running6 = false;
+                    running7 = false;
+                    running4B = false;
+                    moveOn = false;
                  }
               }
             }
@@ -191,7 +222,7 @@ void usercontrol (void) {
     else
       vdrive(Controller.Axis3.value()*100.0/127.0, Controller.Axis2.value()*100/127.0);
 
-    intakeControl(running4, rValue, lValue, IsaacDriving);
+    intakeControl(running4 || running4B, rValue, lValue, IsaacDriving);
     trayControl(IsaacDriving);
   
     vex::task::sleep(20); 

@@ -96,27 +96,35 @@ void moveTray(int pct) {
 
 //////////DRIVER_FUNCTIONS//////////
 #pragma region
-
+bool in, out,slow;
 /////////////////INTAKE////////////////////////////////////////////////////////////////////////////////////////////
 void intakeControl(bool running, int32_t rValue, int32_t lValue, bool isaac) {
   //if R1 is pressed, intake intakes at 100 until unpressed
   //if R2 pressed, intake outakes at -100 until unpressed
   //if R1 and (shiftKey) L2 pressed, intake intakes at 50 until unpressed
   //if R2 and (shiftKey) L2 pressed, intake outakes at -50 until unpressed
+  slow = Controller.ButtonY.pressing();
+  if(isaac){
+    in = Controller.ButtonR1.pressing();
+    out = Controller.ButtonL1.pressing();
+  } else {
+    in = Controller.ButtonR1.pressing();
+    out = Controller.ButtonR2.pressing();
+  }
   if(!running){
-    if(Controller.ButtonR1.pressing() && Controller.ButtonR2.pressing()){
+    if(out && in){
       spinIntake(0);
       moveArm(0);
     }
-    else if(Controller.ButtonR1.pressing()){
+    else if(in){
       spinIntake(100);
       moveArm(-5);
     } 
-    else if(Controller.ButtonR2.pressing()){
+    else if(out){
       spinIntake(-100);
       moveArm(0);
     } 
-    else if(Controller.ButtonY.pressing()){
+    else if(slow){
       spinIntake(-15);
       moveArm(0);
     }
@@ -225,6 +233,29 @@ void armControl() {   //big function for controlling arms
 
 /////////////////TRAY CONTROL///////////////////////////////////////////////////////////////////////////////////////
 bool trayMovingBackAutomat = false;
+bool trayMovingUpAutomat = false;
+void moveUpAutomatically(){
+  trayMovingUpAutomat = true;
+  while(tray.rotation(rev) > -5.95){
+    if (tray.rotation(rev) > -4){
+      moveTray(-60);
+    } else {
+      moveTray(-30);
+    }
+  }
+  if (tray.rotation(rev) > -4){
+    moveTray(-60);
+  } else if (tray.rotation(rev) > -5.95){
+      moveTray(-30);
+  } else {
+      if(Controller.ButtonUp.pressing()){
+        moveTray(-30);
+      } else {
+        moveTray(0);
+      }
+  }
+  trayMovingUpAutomat = false;
+}
 
 void moveBackAutomatically(){
   trayMovingBackAutomat = true;
@@ -246,33 +277,50 @@ void moveBackAutomatically(){
 
   **/
 }
-
+bool up, down, autoRunUp;
 void trayControl(bool isaac) {
   //if limit switch hit, reset encoder to zero
   if (trayLimit.value() == 1){
     tray.resetRotation();
   }
-  if(Controller.ButtonL2.pressing()){
-      vex::thread buttonAToggleTask(moveBackAutomatically);
-  }
-  if (!armMoving){
-  if (Controller.ButtonL2.pressing()){    //if L2 continously pressed, move tray towards limit switch
-    moveTray(90);                           
-  } else if (Controller.ButtonL1.pressing()){    //if L1 continously pressed, move tray away from limit switch
-    if (tray.rotation(rev) > -4){
-      moveTray(-60);
-    } else if (tray.rotation(rev) > -5.95){
+  autoRunUp = isaac;
+  if(isaac){
+    if(Controller.ButtonUp.pressing()){
       moveTray(-30);
+      up = false;
+      down = false;
     } else {
-      if(Controller.ButtonUp.pressing()){
-        moveTray(-30);
-      } else {
+      up = Controller.ButtonR2.pressing();
+      down = Controller.ButtonL2.pressing();
+    }
+  } else {
+    down = Controller.ButtonL2.pressing();
+    up = Controller.ButtonL1.pressing();
+  }
+  
+  if (!trayMovingBackAutomat && !trayMovingUpAutomat){
+    if(down){
+      vex::thread buttonAToggleTask(moveBackAutomatically);
+    }
+    else if (up){ 
+        if(!isaac){
+          if (tray.rotation(rev) > -4){
+            moveTray(-60);
+          } else if (tray.rotation(rev) > -5.95){
+            moveTray(-30);
+          } else {
+            if(Controller.ButtonUp.pressing()){
+              moveTray(-30);
+            } else {
+                moveTray(0);
+            }
+          }
+        } else {
+            vex::thread UpToggleTask(moveUpAutomatically);
+        }   
+      } else if (trayMovingBackAutomat == false ){
         moveTray(0);
       }
-    }
-  } else if (trayMovingBackAutomat == false ){
-    moveTray(0);
-  }
   }
 }
 
