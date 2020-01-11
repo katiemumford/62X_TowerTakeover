@@ -17,7 +17,7 @@ class PID {
     double error = target - current;
     double prevError = error;
     bool last = false;
-    while(std::abs(error) >= .5){
+    while(std::abs(error) > 1.5){
       this_thread::sleep_for(10); 
 
       if(std::abs(error) < .05)
@@ -28,7 +28,7 @@ class PID {
       current = inert.heading();
       if(std::abs(target - current) > std::abs(target - current + 360)){
         error = target - current + 360;
-      } else {
+      } else{
         error = target - current;
       }
 
@@ -54,11 +54,11 @@ class PID {
       Controller.Screen.clearScreen();
       Controller.Screen.newLine();
       Controller.Screen.print(speed);
+      
       lF.spin(forward, speed, vex::percentUnits::pct);
       lB.spin(forward, speed, vex::percentUnits::pct);
       rF.spin(reverse, speed, vex::percentUnits::pct);
       rB.spin(reverse, speed, vex::percentUnits::pct);
-      
     }
     lF.stop();lB.stop();rF.stop();rB.stop();
   }
