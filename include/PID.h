@@ -49,6 +49,10 @@ class PID {
         speed = 100;
       } else if(speed < -100){
         speed = -100;
+      } else if(speed > 0 && speed  < 1){
+        speed = 1;
+      } else if(speed < 0 && speed > -1){
+        speed = -1;
       }
 
       Controller.Screen.clearScreen();
