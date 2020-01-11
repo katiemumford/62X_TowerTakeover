@@ -1,6 +1,6 @@
 #include "./vex.h"
-#include "./config.h"
 #include "./vex_global.h"
+#include "PID.h"
 #include <cmath>
 #include <ratio>
 #include <vector>
@@ -597,12 +597,46 @@ void gyroTurn3 (double DegreeAmount, int velocL, int velocR, int min){
     Controller.Screen.print("Gyro Turn Finished");
 }
 
+void inertialTurn(int deg){
+  if(deg > inert.rotation()){
+    lF.spin(forward, 20, vex::percentUnits::pct);
+    lB.spin(forward, 20, vex::percentUnits::pct);
+    rF.spin(reverse, 20, vex::percentUnits::pct);
+    rB.spin(reverse, 20, vex::percentUnits::pct);
+    waitUntil(deg <= inert.rotation());
+  } else {
+    lF.spin(reverse, 20, vex::percentUnits::pct);
+    lB.spin(reverse, 20, vex::percentUnits::pct);
+    rF.spin(forward, 20, vex::percentUnits::pct);
+    rB.spin(forward, 20, vex::percentUnits::pct);
+    waitUntil(deg >= inert.rotation());
+  }
+  lF.stop();
+  lB.stop();
+  rF.stop();
+  rB.stop();
+}
+
 int resetGyro() {
   Controller.Screen.clearScreen();
   Controller.Screen.newLine();
   Controller.Screen.print("Calibrating Gyro...");
   Gyro.startCalibration();
   while(Gyro.isCalibrating()){
+    vex::this_thread::sleep_for(10);
+  }
+  Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
+  Controller.Screen.print("Done!");
+  return(0);
+}
+
+int resetInertia(){
+  Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
+  Controller.Screen.print("Calibrating Inert...");
+  inert.calibrate();
+  while(inert.isCalibrating()){
     vex::this_thread::sleep_for(10);
   }
   Controller.Screen.clearScreen();
