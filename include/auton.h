@@ -37,7 +37,7 @@ void PIDTest2(){
   }
 }
 void PIDTest() {
-  PID * pPID= new  PID(.4, 0, .245);
+  PID * pPID= new  PID(.395, 0, .245);
 
   Controller.Screen.clearScreen();
   Controller.Screen.newLine();
@@ -51,12 +51,8 @@ void PIDTest() {
   Controller.Screen.print("Done!");
 
   pPID->turn(45);
-  wait(1000);
   pPID->turn(0);
-  
-  wait(1000);
   pPID->turn(90);
-  wait(1000);
   pPID->turn(0);
   /**
   wait(1000);
