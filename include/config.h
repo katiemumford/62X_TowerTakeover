@@ -36,6 +36,8 @@ vex::limit trayLimit (Brain.ThreeWirePort.B);
 
 vex::gyro Gyro = vex::gyro(Brain.ThreeWirePort.H);
 
+vex::inertial inert (vex::PORT3);
+
 //vex::gyro gyr (Brain.ThreeWirePort.B);
 //vex::accelerometer acc (Brain.ThreeWirePort.C);
 
