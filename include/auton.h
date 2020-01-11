@@ -21,7 +21,50 @@ double distance2b = 2.269-0.7; //drive to cube
 double turn2b = 0.5; //turn toward zone
 double distance2c = 0.2*squareDistance; //drive to zone
 double distance2d = distance2d;//back away from zone
+void PIDTest2(){
+  inert.startCalibration();
+  Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
+  Controller.Screen.print("Calibrating Inert...");
+  while(inert.isCalibrating()){
+    vex::this_thread::sleep_for(10);
+  }
+  Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
+  Controller.Screen.print("Done!");
+  while(1){
+    inert.heading();
+  }
+}
+void PIDTest() {
+  PID * pPID= new  PID(.45, 0, 0);
 
+  Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
+  Controller.Screen.print("Calibrating Inert...");
+  inert.startCalibration();
+  while(inert.isCalibrating()){
+    vex::this_thread::sleep_for(10);
+  }
+  Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
+  Controller.Screen.print("Done!");
+
+  pPID->turn(45);
+  wait(1000);
+  pPID->turn(0);
+  
+  wait(1000);
+  pPID->turn(90);
+  wait(1000);
+  pPID->turn(0);
+  /**
+  wait(1000);
+  pPID->turn(180);
+  wait(1000);
+  pPID->turn(0);
+  */
+}
 //Helper classes for SkillsAuto
 void placeCubes(){
   spinIntake(-40);//Outake to get cube at the right spot
@@ -352,19 +395,22 @@ void RedAutoProt(){
   gyroTurn3(-50,20,20,10);
   
   basicEncoderDrive(40,.6,true);
-  gyroTurn3(-122,50,50,10);
+  gyroTurn3(-150,25,25,10);
 
-  basicEncoderDrive(60,2.90,true);
-  gyroTurn3(-140,10,10,10);
+  basicEncoderDrive(60,2,true);
 
-  spinIntake(-20);
+  gyroTurn3(Gyro.value(rotationUnits::deg)+5,5,5,5);
+
+  basicEncoderDrive(60,.7,true);
+
   basicEncoderDrive(30,.35,true);
   
+  spinIntake(-20);
+  wait(500);
   moveTray(-80);
   wait(2500);
-  spinIntake(-60);
+  spinIntake(-40);
   moveTray(0);
-
   basicEncoderDrive(18,-1,true);
 }
 void BlueAutoProt(){
