@@ -12,12 +12,15 @@ class PID {
     Kd = newKd;
   }
 
-  void turn(double target) {
+  void turn(double target, double timeLimit) {
     double speed, current = inert.heading(), dT, prevTime = 0, integral = 0,  derivative = 0;
     double error = target - current;
     double prevError = error;
     bool last = false;
-    while(std::abs(error) > 1.5){
+    uint32_t t1 = timer::system();
+    uint32_t t2 = timer::system();
+    while((std::abs(error) > 1.5 || std::abs(speed) > 15) && t2 - t1 < timeLimit){
+      uint32_t t2 = timer::system();
       this_thread::sleep_for(10); 
 
       if(std::abs(error) < .05)
@@ -57,7 +60,7 @@ class PID {
 
       Controller.Screen.clearScreen();
       Controller.Screen.newLine();
-      Controller.Screen.print(speed);
+      Controller.Screen.print(current);
       
       lF.spin(forward, speed, vex::percentUnits::pct);
       lB.spin(forward, speed, vex::percentUnits::pct);
