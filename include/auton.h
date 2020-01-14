@@ -21,46 +21,75 @@ double distance2b = 2.269-0.7; //drive to cube
 double turn2b = 0.5; //turn toward zone
 double distance2c = 0.2*squareDistance; //drive to zone
 double distance2d = distance2d;//back away from zone
-void PIDTest2(){
-  inert.startCalibration();
-  Controller.Screen.clearScreen();
-  Controller.Screen.newLine();
-  Controller.Screen.print("Calibrating Inert...");
-  while(inert.isCalibrating()){
-    vex::this_thread::sleep_for(10);
-  }
-  Controller.Screen.clearScreen();
-  Controller.Screen.newLine();
-  Controller.Screen.print("Done!");
-  while(1){
-    inert.heading();
-  }
-}
-void PIDTest() {
+
+void RedAutoUnprotPID8(){
   PID * pPID= new  PID(.395, 0, .245);
 
-  Controller.Screen.clearScreen();
-  Controller.Screen.newLine();
-  Controller.Screen.print("Calibrating Inert...");
-  inert.startCalibration();
-  while(inert.isCalibrating()){
-    vex::this_thread::sleep_for(10);
-  }
-  Controller.Screen.clearScreen();
-  Controller.Screen.newLine();
-  Controller.Screen.print("Done!");
+  basicEncoderDrive(70,.4,true);
+  basicEncoderDrive(70,-.4,true);
 
-  pPID->turn(45);
-  pPID->turn(0);
-  pPID->turn(90);
-  pPID->turn(0);
-  /**
-  wait(1000);
-  pPID->turn(180);
-  wait(1000);
-  pPID->turn(0);
-  */
+  vex::thread t(deployTray); //Start deploy thread
+  spinIntake(100); //Start intaking and drive forward as deploy is happening
+  t.join(); //Wait for deploy thread to finish
+  moveArm(-30);
+  
+  basicEncoderDrive(65,1,true); //Drive forward to pick up the 3 cubes
+
+  basicEncoderDrive(40,1.8,true); //Drive forward to pick up the 3 cubes
+  pPID->turn(-43,2000);
+
+  basicEncoderDrive(80,-3,true);  
+
+  pPID->turn(0,2500);
+
+  basicEncoderDrive(40,3.2,true); //Drive forward to pick up the 3 cubes
+  inert.resetHeading();
+  pPID->turn(152,3000);
+    
+  basicEncoderDrive(60,2.65,true); //Drive forward to pick up the 3 cubes
+  moveTray(-80);
+
+  spinIntake(-100);
+  wait(300);
+  spinIntake(0);
+  wait(2000);
+
+  moveTray(0);
+  basicEncoderDrive(18,-1,true);
+
 }
+
+void RedAutoUnprotPID6(){
+  PID * pPID= new  PID(.395, 0, .245);
+
+  basicEncoderDrive(40,.8,true);
+  basicEncoderDrive(40,-.8,true);
+
+  vex::thread t(deployTray); //Start deploy thread
+  spinIntake(100); //Start intaking and drive forward as deploy is happening
+  t.join(); //Wait for deploy thread to finish
+  
+  pPID->turn(0,3000);
+
+  basicEncoderDrive(50,2.5,true); //Drive forward to pick up the 3 cubes
+
+  basicEncoderDrive(70,-2.3,true);  //Pick up 4 cubes
+
+  pPID->turn(100,3000);
+
+  basicEncoderDrive(50,1,true);  //Pick up 4 cubes
+
+  spinIntake(-25);
+  wait(250);
+  moveTray(-80);
+  spinIntake(0);
+  wait(2500);
+  moveTray(0);
+
+  spinIntake(-60);
+  basicEncoderDrive(18,-1,true);
+}
+
 //Helper classes for SkillsAuto
 void placeCubes(){
   spinIntake(-40);//Outake to get cube at the right spot
@@ -88,6 +117,7 @@ void placeTower(){
   running3 = true;
   wait(2000);
 }
+
 //6 cubes on unprotected side
 void RedAuto(){
   basicEncoderDrive(70,.5,true);
@@ -149,15 +179,11 @@ void BlueAuto(){
 
   basicEncoderDrive(18,-1,true);
 }
+
+/**
 //2 cubes on protected side
 void RedAutoTall(){
   setBraking(); //Set motors to break
-
-  /**
-  vex::thread t(deployTray);
-  resetGyro();
-  t.join();
-  */
 
   resetGyro(); //Calibrate the Gyroscope
 
@@ -195,7 +221,7 @@ void BlueAutoTall(){
   vex::thread t(deployTray);
   resetGyro();
   t.join();
-  */
+
 
   resetGyro(); //Calibrate the Gyroscope
 
@@ -227,6 +253,8 @@ void BlueAutoTall(){
   basicEncoderDrive(35,-1,true, 2);
 
 }
+*/
+
 //8 cubes on unprotected side(WIP)
 void RedAuto2(){
    
@@ -439,6 +467,71 @@ void BlueAutoProt(){
 
   basicEncoderDrive(18,-1,true);
 }
+
+void RedAutoProtPID(){
+  PID * pPID= new  PID(.365, 0, .245);
+  basicEncoderDrive(70,.5,true);
+  basicEncoderDrive(70,-.5,true);
+
+  vex::thread t(deployTray); //Start deploy thread
+  t.join(); //Wait for deploy thread to finish
+
+  moveArm(-30); //Set arm to downward power
+  wait(200); //Wait for 200ms for arm to fall
+  
+
+  spinIntake(100); //Start intaking and drive forward as deploy is happening
+  
+  basicEncoderDrive(40,3.2,true);
+  pPID->turn(-45,3000);
+  
+  basicEncoderDrive(40,1,true);
+  pPID->turn(-140,3000);
+
+  basicEncoderDrive(60,2.6,true);
+
+  basicEncoderDrive(60,.5,true);
+  
+  spinIntake(-20);
+  wait(500);
+  moveTray(-80);
+  wait(2500);
+  spinIntake(-40);
+  moveTray(0);
+  basicEncoderDrive(18,-1,true);
+}
+
+void BlueAutoProtPID(){
+  PID * pPID= new  PID(.395, 0, .245);
+  basicEncoderDrive(70,.5,true);
+  basicEncoderDrive(70,-.3,true);
+
+  vex::thread t(deployTray); //Start deploy thread
+  t.join(); //Wait for deploy thread to finish
+
+  moveArm(-30); //Set arm to downward power
+  wait(200); //Wait for 200ms for arm to fall
+
+  spinIntake(100); //Start intaking and drive forward as deploy is happening
+  
+  basicEncoderDrive(35,3.5,true);
+  pPID->turn(45,3000);
+  gyroTurn3(-50,20,20,10);
+  
+  basicEncoderDrive(40,.6,true);
+  pPID->turn(150,3000);
+
+  basicEncoderDrive(60,3,true);
+  
+  spinIntake(-20);
+  wait(500);
+  moveTray(-80);
+  wait(2500);
+  spinIntake(-40);
+  moveTray(0);
+  basicEncoderDrive(18,-1,true);
+}
+
 //10 cubes, 1 tower, 6 cubes, 1 tower
 void SkillsAuto(){
   inAuto = true;
@@ -496,6 +589,32 @@ void SkillsAuto(){
 void deployTest(){
   vex::thread t(deployTray); //Start deploy thread
   t.join(); //Wait for deploy thread to finish
+}
+
+void PIDTest() {
+  PID * pPID= new  PID(.395, 0, .245);
+
+  Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
+  Controller.Screen.print("Calibrating Inert...");
+  inert.startCalibration();
+  while(inert.isCalibrating()){
+    vex::this_thread::sleep_for(10);
+  }
+  Controller.Screen.clearScreen();
+  Controller.Screen.newLine();
+  Controller.Screen.print("Done!");
+
+  pPID->turn(45,3000);
+  pPID->turn(0,3000);
+  pPID->turn(90,3000);
+  pPID->turn(0,3000);
+  /**
+  wait(1000);
+  pPID->turn(180);
+  wait(1000);
+  pPID->turn(0);
+  */
 }
 
 /*
